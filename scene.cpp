@@ -3,38 +3,78 @@
 #include <conio.h>
 #include <iterator>
 #include "playgrnd.h"
-//	playground doska("pole1");
+	
+//playground* doska;
 //
 //void disppole();
 // 
 //
-//main(){
-//	
+//int main(){
+//#################################
+//////cheking classes base - package	
 //
-//  
-////display array
+////	package pp;
+//	package* pip = new package();
+//	colonn* q = new colonn(5,7,3);
+////	q->addChip();
+//	
+//	//q->newx = q->CurColonn.begin();q->newx.rotate(0)
+//	for(int i=0; i<8; i++){
+//		std::cout<< "level: " << q->level() << "\n";
+//		q->addChip();
+//		
+//	}
+//	for(int i=0; i<8; i++){
+//		q->move(7-i,i/3.);
+//	}
+//	//q->stat1();
+//	pip->addChip(2,3,1);
+//	pip->stat2();
+//	delete pip;
+//	delete q;
+//
+//	return 0;
+//}
+//####################################
+//display array
+//doska = new playground("pole1");
 //disppole();
-//doska.nextpl();
+//doska->nextpl();
 //	  //std::cout << get_m();
 //	  int x,y;
 //	  for(;;){
 // 		std::cin >> x >> y;
-//		if (doska.give(x,y))doska.nextpl();
+//		if (doska->give(x,y)) doska->nextpl();
 //		disppole();
 //		
-//		std::cout << doska.player->plr; 
+//		std::cout << doska->player->plr; 
 //		if (getch()==32) break;
 //      }
+//	  //doska.
 //}
 //
 //void disppole(){
-//	 
-//	for (int i=0; i<=doska.get_m(); i++)
-//	  for (int j=0; j<=doska.get_n(); j++){
-//		  if (doska.getcell_s(i,j)) std::cout << '_';
-//		  else std::cout << doska.getcell_c(i,j);
-//		  if (j==doska.get_n()) std::cout << "\n";
-//	  }
+//	int l=0; 
+//	package::Decart dec;
+//	for (int i=0; i<=doska->get_m(); i++)
+//		for (int j=0; j<=doska->get_n(); j++){
+//			if (doska->isWall(i,j)) std::cout << '_';
+//			else {
+//				l=doska->pip->level(i,j);
+//				std::cout << l;
+//				while (l!=0){									
+//					dec = doska->whereis(i,j,l-1);
+//					l--;
+//				}
+//			}
+//			if (j==doska->get_n()) std::cout << "\n";
+//		}
+//		doska->stat3();
+//	
+////		std::cout<<i<<' '<<j<<"\n";
+//		std::cout<<"x: "<< dec.x <<"\n";
+//		std::cout<<"y: "<< dec.y <<"\n";
+//		std::cout<<"z: "<< dec.z <<"\n";
 //}
 
 #include <gl/glut.h>
@@ -187,7 +227,7 @@ for (int i=0; i<=m; i++)
 		  /*if (doska.getcell_s(i,j)) std::cout << '_'; //check
 		  else std::cout << doska.getcell_c(i,j);     //correct
 		  if (j==doska.get_n()) std::cout << "\n";    //image*/
-		  if (doska.getcell_s(i,j)) 
+		  if (doska.isWall(i,j)) 
 				{
 				/*stones*/
 				glPushMatrix();
@@ -198,22 +238,31 @@ for (int i=0; i<=m; i++)
 				glPopMatrix();				
 		  }
 		  else {
-			  int co=doska.getcell_c(i,j);
-			  pl = doska.getcell_g(i,j);
+			  int co=doska.pip->level(i,j);
+			  pl = doska.pip->playerNum(i,j);
 			  r = colors[pl]>>16;
 			  g = (colors[pl] ^ r<<16)>>8;
 			  b = (colors[pl]^(r<<16 | g<<8));
 			  while (co!=0)
 			  {
 				/*chips*/
+				package::Decart dec;				
+				dec = doska.whereis(i,j,co-1);
+				std::cout<<i<<' '<<j<<" ("<< co-1<<")\n";
+				std::cout<<"x: "<< dec.x <<"\n";
+				std::cout<<"y: "<< dec.y <<"\n";
+				std::cout<<"z: "<< dec.z <<"\n";
+				
 				glPushMatrix();
-				glTranslatef(FSIZE+0.1*j, FSIZE+0.1*i, 0.6*FSIZE*(co-1));
-			
+//				glTranslatef(FSIZE+0.1*j+dec.x, dec.y, 0.6*FSIZE*(co-1)+dec.z);
+				//
+//############# //==correct THIS line
+				glTranslatef(FSIZE+dec.x, FSIZE+dec.y, dec.z);				
 				glColor3ub(r,g,b);
 				glLoadName(obj_n);
 				//glutWireSphere(0.05f, 10, 10);
 				
-				box(0.1, 0.03, 5);
+				box(0.1, 0.03, 8);
 				glPopMatrix();
 				
 				co--;
@@ -250,7 +299,7 @@ void ai(){
   int n1=0, n2=0;
   srand ( time(NULL) );		/*initialize random number generator*/
   if(doska.player->chp_count!=0) {
-	while(!doska.give(n1,n2)){
+	while(!doska.give(n1,n2)){				//######## give #########
 			n1 = rand()%(m+1);
 			n2 = rand()%(n+1);
 	}
@@ -264,7 +313,7 @@ void FixPos(GLint h)
 	int ti,tj;
 	ti = h%(n+1);
 	tj = (h-ti)/n;
-	if (doska.give(tj,ti)) doska.nextpl();
+	if (doska.give(tj,ti)) doska.nextpl();	//######## give #########
 	while (doska.player->plr!=1) ai();
 }
 
@@ -343,7 +392,7 @@ void keyboard(unsigned char key, int x, int y)
    
    switch (key) {
       case 's':
-		 doska.stats();
+		 doska.stat3();
          break;
 	  default:
 		 break;

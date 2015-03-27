@@ -11,72 +11,99 @@ typedef unsigned short int uint;
 // == base ==
 class base{
 	float fi;
+	uint dir;
 public:
-	base(){fi=0;};
+	base(){fi=0; dir=0;};
 	float rotate(float fi_);
+	uint orient(uint d1);
 	void whereis(float &x, float &z);
 };		//----
 
 // == colonn ==
-class colonn : base{
+typedef std::vector<base>::iterator b_Iter;
+class colonn : public base{
 	int x,y;
-	uint plr;
+	uint MySize;
+	
 	std::vector<base> CurColonn;
-public:
-	colonn(){x=0; y=0; plr=0; CurColonn.clear();};
-	colonn(int x_, int y_, uint plr_){x=x_; y=y_; plr=plr_;};
+	b_Iter b_top;
+	uint plr;
+public:	
+	colonn();
+	colonn(int x_, int y_, uint plr_){x=x_; y=y_; plr=plr_;MySize = 0;};
+	~colonn(){CurColonn.clear();};
 
 	void addChip(void);
-	void move(int h);
+	void delChip(void);
+	uint playerNum(void);
+	uint playerNum(uint pp);
+	uint orient(int h, uint d1);
+	float move(int h, float c);
+	void whereis(int i, float &x, float &z);
 	bool hit(int x_, int y_);
 	int level(void);
+	//
+	void stat1();
 };		//----
 
 // == package ==
 typedef std::vector<colonn>::iterator v_Iter;
-class package : colonn{
+class package : public colonn{
 	std::vector<colonn> Pack;
 	
 private:
-	v_Iter find(int x1, int y1);
+	uint PoleSize;
 public:
+	typedef struct{				//координата
+		float x,y,z;
+	}Decart;
+	int find(int x1, int y1);
+	v_Iter v_top;
+	package();
+	~package(){Pack.clear();};
 	void addChip(int x1, int y1, uint plr);
-	//del;
+	void delChip(int x1, int y1);
+	uint playerNum(int x1, int y1);
+	uint playerNum(int x1, int y1, uint p);
+	int level(int x1, int y1);
+	uint orient(int x1, int y1, int h, uint d1);
+	float move(int x1, int y1, int h, float c);
+	Decart whereis(int x1, int y1, int lev);
+	//
+	void stat2();
 };		//----
 
 
 // == playground ==
-class playground : package{
-	//element of table
-    typedef struct{
-		bool wall;
-		int player;
-        int count;
-	}cell;
-    cell pygr[RANK][RANK];
+class playground {
+    bool pygr[RANK][RANK];		//таблица геометрии уровня
 	
-	//spisok
-	typedef struct{
+	typedef struct{				//spisok игроков
 		int plr;
 		int chp_count;
 	}listob;
 	typedef std::list<listob> Glist;
 	Glist gamers;
 	
+	typedef struct{				//
+		bool b;
+		int x,y;
+	}animation;
+	animation anim;
+
 	int plyr,m,n;
 private:
-	void explosion(int x_,int y_);
+	void explosion(int x_, int y_);
 	void swappoints(int x1, int y1);
 	void findnminus(int p, int s);
-//	void store(int c);
-//	void remove(listob *ob);
-public:
-	bool getcell_s(int i,int j);
-    int getcell_g(int i,int j);
-    int getcell_c(int i,int j);
+	bool rotation(int x, int y, int h);
 	
+public:
+	package *pip;
+	bool isWall(int i,int j);
+    
 	Glist::iterator player;//global var
-	void stats(void);
+	void stat3(void);//useless thing
 	
 	bool nextpl();
 	int get_n();
@@ -84,6 +111,8 @@ public:
 	//конструктор
 	playground();
 	playground(std::string fname);
+	~playground(){ delete pip; };
+	void mustGive(int x,int y, bool &vr, int &ch, uint dd);
 	bool give(int x,int y);
-
+	package::Decart whereis(int x1, int y1, int lev);
 };
