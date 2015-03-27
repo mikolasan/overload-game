@@ -1,10 +1,66 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <math.h>
 
 #include "playgrnd.h"
 
+#define CELLSIZE 0.1
+#define FISHSIZE 0.05
 #define STARTF 2
+
+// == base ==
+void base::whereis(float &x, float &z){
+	float r = (float)CELLSIZE/2.;
+	x = r*cos(fi);
+	z = r*sin(fi);
+}
+float base::rotate(float fi_){
+	float tmp = this->fi;
+	this->fi += fi_;
+	return tmp;
+}
+
+// == colonn ==
+void colonn::addChip(void){
+	base q1;
+	this->CurColonn.push_back(q1);
+}
+void colonn::move(int h){
+	CurColonn[h].rotate(GL_PI/12);
+}
+bool colonn::hit(int x_, int y_){
+	bool answer = false;
+	if (x_==x && y_==y) answer = true;
+	return answer;
+}
+int colonn::level(void){
+	return this->CurColonn.size();
+}
+
+// == package ==
+v_Iter package::find(int x1, int y1){
+	v_Iter p;
+	p = this->Pack.begin();
+	while( !(p->hit(x1, y1)) ){
+		++p;
+		if (p==Pack.begin()) break;
+	}
+	return p;
+}
+void package::addChip(int x1, int y1, uint plr){
+	v_Iter p1;				//указатель на сущ. столб
+	p1 = find(x1, y1);		//или в начало
+	if (p1->level()!=0){	//если не пусто, добавить
+		p1->addChip();		
+	}
+	else {
+		colonn v1(x1, y1, plr);
+		this->Pack.push_back(v1); 
+	}
+}
+
+// == playground ==
 //== read play ground from file 
 playground::playground(){
 	gamers.clear();

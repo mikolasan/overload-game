@@ -45,7 +45,7 @@
 //#include <gl/glaux.h>
 #include <math.h>
 
-#define GL_PI 3.1415926535897932384626433832795028841971693993751
+
 
 //void Reshape(int width, int height)
 //{

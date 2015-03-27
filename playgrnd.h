@@ -1,10 +1,52 @@
 #include <list>
+#include <vector>
 #include <iterator>
-#pragma once
+
+
+typedef unsigned short int uint;
 
 #define RANK 12
+#define GL_PI 3.1415926535897932384626433832795028841971693993751
 
-class playground{
+// == base ==
+class base{
+	float fi;
+public:
+	base(){fi=0;};
+	float rotate(float fi_);
+	void whereis(float &x, float &z);
+};		//----
+
+// == colonn ==
+class colonn : base{
+	int x,y;
+	uint plr;
+	std::vector<base> CurColonn;
+public:
+	colonn(){x=0; y=0; plr=0; CurColonn.clear();};
+	colonn(int x_, int y_, uint plr_){x=x_; y=y_; plr=plr_;};
+
+	void addChip(void);
+	void move(int h);
+	bool hit(int x_, int y_);
+	int level(void);
+};		//----
+
+// == package ==
+typedef std::vector<colonn>::iterator v_Iter;
+class package : colonn{
+	std::vector<colonn> Pack;
+	
+private:
+	v_Iter find(int x1, int y1);
+public:
+	void addChip(int x1, int y1, uint plr);
+	//del;
+};		//----
+
+
+// == playground ==
+class playground : package{
 	//element of table
     typedef struct{
 		bool wall;
