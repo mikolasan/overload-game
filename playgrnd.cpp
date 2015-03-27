@@ -184,7 +184,7 @@ uint package::orient(int x1, int y1, int h, uint d1){
 	int g = this->find(x1, y1), real_h = 0;
 	uint d2=0;
 	if (g<0)
-		std::cout << "error:cannot find colonnfor orient \n";
+		std::cout << "error:cannot find colonn for orient \n";
 	else {
 	real_h = Pack[g].level() - h;
 	d2 = Pack[g].orient(real_h, d1);
@@ -218,7 +218,7 @@ package::Decart package::whereis(int x1, int y1, int lev){
 		case 0:
 			coord.x -= FISHSIZE;
 			break;
-		case 1:
+		case 1:									//лишний код ??
 			coord.y += FISHSIZE;
 			break;
 		case 2:
@@ -333,15 +333,7 @@ bool playground::give(int x,int y){
 		else {							//все хорошо, тогда
 			//this->stat3();
 			//std::cout << "3true \n" ;
-			pip->addChip(x,y, person2);//pygr[x][y].count++;
-			player->chp_count++;
-			int high = pip->level(x, y);
-			if (high >= STARTF*2) {
-				//explosion(x,y);
-				anim.b = true;
-				anim.x = x;
-				anim.y = y;
-			}
+			
 			return true;
 		}
 	}
@@ -361,7 +353,8 @@ void playground::findnminus(int p, int s){
 	}
 }
 //=========
-void playground::swappoints(int x1, int y1){
+void playground::swappoints(int x1, int y1){	//!!использует текущего игрока
+												//(указатель на список player)
 	int expans = player->plr, target=0, prey=0;
 
 	target = pip->playerNum(x1, y1);	//игрок на кого падет наша фишка
@@ -403,28 +396,53 @@ package::Decart playground::whereis(int x1, int y1, int lev){
 	return coord;
 }
 //==========
-void playground::mustGive(int x, int y, bool &vr, int &ch, uint dd){
-	if (!this->isWall(x,y)){
+void playground::mustGive(int x, int y, bool &vr){
+	int ped = player->plr;
+	if (!this->isWall(x,y) || vr){
 		swappoints(x,y);
+		//v-- give --v
+		pip->addChip(x,y, ped);//pygr[x][y].count++;
+		player->chp_count++;
+		int high = pip->level(x, y);
+		if (high >= STARTF*2) {
+			//explosion(x,y);
+			anim.b = true;
+			anim.x = x;
+			anim.y = y;
+		}
+		//^-- give --^
 		vr = give(x,y);
+
+	}
+	else vr = false;
+}
+//==========
+uint playground::orient(int x1, int y1, int &h, uint d1){
+	int rx, ry, dd=0;
+	if(give(x1,y1)){ 
+		rx = x + int(cos(GL_PI/2.*d1));
+		ry = y + int(sin(GL_PI/2.*d1));
+		dd = pip->orient(rx,ry,h,d1);
+	h++;
+	}
+	return dd;
+}
+//==========
+void playground::explosion(int x_,int y_){
+//###### пересчитать поле (+mustGive)
+	player->chp_count-=STARTF*2;	//one list operation
+	int x1, y1;						//--v--explosion--v--
+	bool var, var2, rep_v=false, rep_h=false;
+	pip->delChip(x_,y_);			//	pygr[x_][y_].count-=4;//
+
 		try{
 //			pip->orient(x,y,ch,dd);
 		}
 		catch(...){
 			std::cout<<"you are in Catch";
 		}
-		ch++;
-	}
-	else vr = false;
-}
-//==========
-void playground::explosion(int x_,int y_){
-//	this->rotation(x_,y_);			//pre ver animation
-	player->chp_count-=STARTF*2;	//one list operation
-	int x1, y1;						//--v--explosion--v--
-	bool var, var2, rep_v=false, rep_h=false;
-	pip->delChip(x_,y_);			//	pygr[x_][y_].count-=4;//
-//	if (pip->level(x_,y_)==0)	del	//it's no serious for memory
+		ch++;	
+//###### узнать направления	
 	uint dd;					//direction of moving
 	int ch = 1;						//h
 	for (int i4=0; i4<2; i4++){
@@ -433,14 +451,10 @@ void playground::explosion(int x_,int y_){
 			y1=y_;	
 			x1=x_-1;					//left
 			dd = 2;
-			mustGive(x1,y1,var,ch,dd);
-//			if(var){ pip->orient(x_,y_,ch,dd);
-//			ch++;}
+			orient(x1,y1,ch,dd);
 			x1=x_+1;					//right
 			dd = 0; 
-			mustGive(x1,y1,var2,ch,dd);
-//			if(var2){ pip->orient(x_,y_,ch,dd);
-//			ch++;}
+			orient(x1,y1,ch,dd);
 			if (var && var2) break;
 			else if (!(var || var2)) rep_h=true;
 		}
@@ -449,14 +463,10 @@ void playground::explosion(int x_,int y_){
 			x1=x_;	
 			y1=y_-1;					//up
 			dd = 1;
-			mustGive(x1,y1,var,ch,dd);
-//			if(var){ pip->orient(x_,y_,ch,dd);
-//			ch++;}
+			orient(x1,y1,ch,dd);
 			y1=y_+1;					//down
 			dd = 3;
-			mustGive(x1,y1,var2,ch,dd);
-//			if(var2){ pip->orient(x_,y_,ch,dd);
-//			ch++;}
+			orient(x1,y1,ch,dd);
 			if (var && var2) break;
 			else if (!(var || var2)) rep_v=true;
 		}

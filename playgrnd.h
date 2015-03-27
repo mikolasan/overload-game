@@ -96,6 +96,7 @@ private:
 	void explosion(int x_, int y_);
 	void swappoints(int x1, int y1);
 	void findnminus(int p, int s);
+	uint orient(int x1, int y1, int &h, uint d1);
 	bool rotation(int x, int y, int h);
 	
 public:
