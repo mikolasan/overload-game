@@ -219,7 +219,7 @@ for(int h=0; h<=m+1; h++){
 	y += 0.1f;
 }  
 //stone & stuff
-int obj_n = 0, pl; 
+int obj_n = 0, pl, co; 
 unsigned int r,g,b;
 
 for (int i=0; i<=m; i++)
@@ -238,7 +238,7 @@ for (int i=0; i<=m; i++)
 				glPopMatrix();				
 		  }
 		  else {
-			  int co=doska.pip->level(i,j);
+			  co = doska.pip->level(i,j);
 			  pl = doska.pip->playerNum(i,j);
 			  r = colors[pl]>>16;
 			  g = (colors[pl] ^ r<<16)>>8;
@@ -248,18 +248,16 @@ for (int i=0; i<=m; i++)
 				/*chips*/
 				package::Decart dec;				
 				dec = doska.whereis(i,j,co-1);
+
 				std::cout<<i<<' '<<j<<" ("<< co-1<<")\n";
 				std::cout<<"x: "<< dec.x <<"\n";
 				std::cout<<"y: "<< dec.y <<"\n";
 				std::cout<<"z: "<< dec.z <<"\n";
 				
 				glPushMatrix();
-//				glTranslatef(FSIZE+0.1*j+dec.x, dec.y, 0.6*FSIZE*(co-1)+dec.z);
-				//
-//############# //==correct THIS line
 				glTranslatef(FSIZE+dec.x, FSIZE+dec.y, dec.z);				
 				glColor3ub(r,g,b);
-				glLoadName(obj_n);
+				glLoadName(obj_n);//for mouse selection
 				//glutWireSphere(0.05f, 10, 10);
 				
 				box(0.1, 0.03, 8);
@@ -277,6 +275,7 @@ for (int i=0; i<=m; i++)
 
 void Draw(void)
 {
+	doska.rotation(
 	//std::cout<<"hello!";
   glPushMatrix();
   glMatrixMode(GL_PROJECTION);
