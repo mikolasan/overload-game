@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <math.h>
 
@@ -245,52 +246,58 @@ void package::stat2(){		// ############ stat ############
 // == playground ==
 playground::playground(){
   gamers.clear();			//global init: list
-  player = 0;				//pointer
   pip = new package();		//vector of chips
   anim.b = false;
 }
 
 playground::playground(std::string fname){// read play ground from file 
   gamers.clear();			//global init: list
-  player = 0;				//pointer
   pip = new package();		//vector of chips
   anim.b = false;
 
-  fname = fname + ".txt";	
-  std::ifstream pole(fname.c_str());//open
   char c_sym[RANK],i_sym;	//special vars for reading matrix in c++ like strings
   int sym, times;
   listob one;				//local exhibit vector of players
   plyr = 0; m = 0; n = 0;
-  while (! pole.eof()){		//init array of playground
-		 pole.getline(c_sym,RANK);//read
-		 n=pole.gcount();
-		 for (int i1=0; i1<=n; i1++){
-			 i_sym = c_sym[i1];		//convert a to i 
-			 sym = atoi(&i_sym);	//&
-			 times = 0;				//default values
-			 pygr[m][i1] = false;	//&
-			 switch (sym){
-				 case 0 :
-					 //isWall
-					 pygr[m][i1] = true;
-					 break;
-				 case 1 :
-					 //empty cell
-					 break;
-				 case 2 :
-					 //player start position
-					 plyr++;
-					 one.chp_count = STARTF;
-					 one.plr = plyr;
-					 gamers.push_back(one);
-					 times = STARTF;
-					 break;
-			 }
-			 for (int g=0; g<times; g++)
-						pip->addChip(m, i1, plyr);
-		 }
-		 m++;
+  
+  fname = fname + ".txt";	
+  std::ifstream field(fname.c_str());//open
+  if(field.is_open())
+  {
+        std::string line;
+        while(std::getline(field, line))
+        {
+              n = line.length();
+              std::istringstream iss(line);
+              int sym;
+              for (int i1=0; i1<=n; i1++)
+              {
+                    iss >> sym;
+                    times = 0;				//default values
+                    pygr[m][i1] = false;	//&
+                    switch (sym)
+                    {
+                       case 0 :
+                         //isWall
+                         pygr[m][i1] = true;
+                         break;
+                       case 1 :
+                         //empty cell
+                         break;
+                       case 2 :
+                         //player start position
+                         plyr++;
+                         one.chp_count = STARTF;
+                         one.plr = plyr;
+                         gamers.push_back(one);
+                         times = STARTF;
+                         break;
+                    }
+                    for (int g=0; g<times; g++)
+		                pip->addChip(m, i1, plyr);
+              }
+        }
+        m++;
   }
   player = gamers.end();
 }
@@ -420,8 +427,8 @@ void playground::mustGive(int x, int y, bool &vr){
 uint playground::orient(int x1, int y1, int &h, uint d1){
 	int rx, ry, dd=0;
 	if(give(x1,y1)){ 
-		rx = x + int(cos(GL_PI/2.*d1));
-		ry = y + int(sin(GL_PI/2.*d1));
+		rx = x1 + int(cos(GL_PI/2.*d1));
+		ry = y1 + int(sin(GL_PI/2.*d1));
 		dd = pip->orient(rx,ry,h,d1);
 	h++;
 	}
@@ -434,7 +441,7 @@ void playground::explosion(int x_,int y_){
 	int x1, y1;						//--v--explosion--v--
 	bool var, var2, rep_v=false, rep_h=false;
 	pip->delChip(x_,y_);			//	pygr[x_][y_].count-=4;//
-
+/*
 		try{
 //			pip->orient(x,y,ch,dd);
 		}
@@ -442,6 +449,7 @@ void playground::explosion(int x_,int y_){
 			std::cout<<"you are in Catch";
 		}
 		ch++;	
+*/
 //###### узнать направления	
 	uint dd;					//direction of moving
 	int ch = 1;						//h

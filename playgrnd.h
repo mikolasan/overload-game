@@ -1,9 +1,9 @@
 #include <list>
 #include <vector>
 #include <iterator>
+#include <sys/types.h>
 
-
-typedef unsigned short int uint;
+//typedef unsigned short int uint;
 
 #define RANK 12
 #define GL_PI 3.1415926535897932384626433832795028841971693993751
@@ -113,7 +113,8 @@ public:
 	playground();
 	playground(std::string fname);
 	~playground(){ delete pip; };
-	void mustGive(int x,int y, bool &vr, int &ch, uint dd);
+	void mustGive(int x,int y, bool &vr);
+	//void mustGive(int x,int y, bool &vr, int &ch, uint dd);
 	bool give(int x,int y);
 	package::Decart whereis(int x1, int y1, int lev);
 };

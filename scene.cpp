@@ -1,6 +1,5 @@
 #include <iostream>
 #include <stdio.h>
-#include <conio.h>
 #include <iterator>
 #include "playgrnd.h"
 	
@@ -36,6 +35,7 @@
 //	return 0;
 //}
 //####################################
+//#include <conio.h>
 //display array
 //doska = new playground("pole1");
 //disppole();
@@ -77,12 +77,10 @@
 //		std::cout<<"z: "<< dec.z <<"\n";
 //}
 
-#include <gl/glut.h>
+//#include <gl/glut.h>
+#include <GL/glut.h>
 #include <stdlib.h>
 #include <time.h>
-//#include <gl/gl.h>
-//#include <gl/glu.h>
-//#include <gl/glaux.h>
 #include <math.h>
 
 
@@ -275,7 +273,7 @@ for (int i=0; i<=m; i++)
 
 void Draw(void)
 {
-	doska.rotation(
+	//doska.rotation(
 	//std::cout<<"hello!";
   glPushMatrix();
   glMatrixMode(GL_PROJECTION);
