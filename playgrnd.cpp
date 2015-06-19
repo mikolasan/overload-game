@@ -260,13 +260,13 @@ playground::playground(std::string fname){// read play ground from file
   listob one;				//local exhibit vector of players
   plyr = 0; m = 0; n = 0;
   
-  fname = fname + ".txt";	
   std::ifstream field(fname.c_str());//open
   if(field.is_open())
   {
         std::string line;
         while(std::getline(field, line))
         {
+              std::cout << line << std::endl;
               n = line.length();
               std::istringstream iss(line);
               int sym;
@@ -299,12 +299,13 @@ playground::playground(std::string fname){// read play ground from file
         }
         m++;
   }
+  pip->stat2();
   player = gamers.end();
 }
 //========
 
 bool playground::nextpl(){
-	Glist::iterator thewho = player;
+	GamerList::iterator thewho = player;
 	if (!gamers.empty()){
 		if(player == gamers.end()) player = gamers.begin();
 		else if(++thewho == gamers.end()) player = gamers.begin();
@@ -349,7 +350,7 @@ bool playground::give(int x,int y){
 }
 //=========
 void playground::findnminus(int p, int s){
-	Glist::iterator iter = player;
+	GamerList::iterator iter = player;
     while(iter->plr!=p){
 		++iter;
 	}
@@ -484,10 +485,10 @@ void playground::explosion(int x_,int y_){
 }
 
 void playground::stat3(void){
-	Glist::iterator man = player;
-		 do{
-			++man;
-			std::cout << "player: " << man->plr << " have "<< man->chp_count <<"\n";	
-		 }while(man!=player);
-	this->pip->stat2();
+    GamerList::iterator man = player;
+    do{
+        ++man;
+        std::cout << "player: " << man->plr << " have "<< man->chp_count <<"\n";	
+    }while(man!=player);
+    this->pip->stat2();
 }

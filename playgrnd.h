@@ -1,8 +1,8 @@
 #include <list>
 #include <vector>
 #include <iterator>
-#include <sys/types.h>
 
+#include <sys/types.h>
 //typedef unsigned short int uint;
 
 #define RANK 12
@@ -17,15 +17,18 @@ public:
 	float rotate(float fi_);
 	uint orient(uint d1);
 	void whereis(float &x, float &z);
-};		//----
+};
+//----
 
 // == colonn ==
-typedef std::vector<base>::iterator b_Iter;
-class colonn : public base{
+typedef std::vector<base> BaseArray;
+typedef BaseArray::iterator b_Iter;
+
+class colonn{
 	int x,y;
 	uint MySize;
 	
-	std::vector<base> CurColonn;
+	BaseArray CurColonn;
 	b_Iter b_top;
 	uint plr;
 public:	
@@ -47,9 +50,11 @@ public:
 };		//----
 
 // == package ==
-typedef std::vector<colonn>::iterator v_Iter;
+typedef std::vector<colonn> ColonnArray;
+typedef ColonnArray::iterator v_Iter;
+
 class package : public colonn{
-	std::vector<colonn> Pack;
+	ColonnArray Pack;
 	
 private:
 	uint PoleSize;
@@ -82,8 +87,9 @@ class playground {
 		int plr;
 		int chp_count;
 	}listob;
-	typedef std::list<listob> Glist;
-	Glist gamers;
+	
+	typedef std::list<listob> GamerList;
+	GamerList gamers;
 	
 	typedef struct{				//
 		bool b;
@@ -103,7 +109,7 @@ public:
 	package *pip;
 	bool isWall(int i,int j);
     
-	Glist::iterator player;//global var
+	GamerList::iterator player;//global var
 	void stat3(void);//useless thing
 	
 	bool nextpl();
@@ -118,3 +124,5 @@ public:
 	bool give(int x,int y);
 	package::Decart whereis(int x1, int y1, int lev);
 };
+
+

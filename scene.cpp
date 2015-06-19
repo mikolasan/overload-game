@@ -3,9 +3,9 @@
 #include <iterator>
 #include "playgrnd.h"
 	
-//playground* doska;
+//playground* board;
 //
-//void disppole();
+//void display_field();
 // 
 //
 //int main(){
@@ -37,39 +37,39 @@
 //####################################
 //#include <conio.h>
 //display array
-//doska = new playground("pole1");
-//disppole();
-//doska->nextpl();
+//board = new playground("field1");
+//display_field();
+//board->nextpl();
 //	  //std::cout << get_m();
 //	  int x,y;
 //	  for(;;){
 // 		std::cin >> x >> y;
-//		if (doska->give(x,y)) doska->nextpl();
-//		disppole();
+//		if (board->give(x,y)) board->nextpl();
+//		display_field();
 //		
-//		std::cout << doska->player->plr; 
+//		std::cout << board->player->plr; 
 //		if (getch()==32) break;
 //      }
-//	  //doska.
+//	  //board.
 //}
 //
-//void disppole(){
+//void display_field(){
 //	int l=0; 
 //	package::Decart dec;
-//	for (int i=0; i<=doska->get_m(); i++)
-//		for (int j=0; j<=doska->get_n(); j++){
-//			if (doska->isWall(i,j)) std::cout << '_';
+//	for (int i=0; i<=board->get_m(); i++)
+//		for (int j=0; j<=board->get_n(); j++){
+//			if (board->isWall(i,j)) std::cout << '_';
 //			else {
-//				l=doska->pip->level(i,j);
+//				l=board->pip->level(i,j);
 //				std::cout << l;
 //				while (l!=0){									
-//					dec = doska->whereis(i,j,l-1);
+//					dec = board->whereis(i,j,l-1);
 //					l--;
 //				}
 //			}
-//			if (j==doska->get_n()) std::cout << "\n";
+//			if (j==board->get_n()) std::cout << "\n";
 //		}
-//		doska->stat3();
+//		board->stat3();
 //	
 ////		std::cout<<i<<' '<<j<<"\n";
 //		std::cout<<"x: "<< dec.x <<"\n";
@@ -83,51 +83,31 @@
 #include <time.h>
 #include <math.h>
 
-
-
-//void Reshape(int width, int height)
-//{
-//  glViewport(0, 0, width, height);
-//  glMatrixMode(GL_PROJECTION);
-//  glLoadIdentity();
-//  gluOrtho2D(0, 2, 0, 2);
-//  glMatrixMode(GL_MODELVIEW);
-//}
 #define FSIZE 0.05
 #define MAXOBJS 100
 
-//GLUquadricObj *qobj;
- playground doska("pole1");
+playground board("field1.txt");
 
 float spin_x = 0;
 float spin_y = 0;
-GLint windW = 300, windH = 300;
+GLint windW = 800, windH = 600;
 GLint viewport[4];
 GLuint selectBuf[MAXOBJS];
 int n,m;
 
-unsigned int colors[] = {
-				//0x000000, 
-				0x004FB2, 
-				0xFFA800,
-                0x72FF00,
-				0xFF0030,
-				0xAE00FF,
-				0x00FF8A,
-				0xFFAFFA
-				};
+unsigned int colors[] =
+{
+    //0x000000, 
+    0x004FB2, 
+    0xFFA800,
+    0x72FF00,
+    0xFF0030,
+    0xAE00FF,
+    0x00FF8A,
+    0xFFAFFA
+};
 
 		
-
-void Init()
-{
-	//playground doska;
-    n = doska.get_n();
-	m = doska.get_m();
-	doska.nextpl();
-	//doska.hmuchplayer;
-}
-
 
 //==========
 void reshape(int width, int height)
@@ -135,25 +115,25 @@ void reshape(int width, int height)
     windW = width;
     windH = height;
 	glViewport(0, 0, windW, windH);
-	// Get the viewport
-    glGetIntegerv(GL_VIEWPORT, viewport);
+	glGetIntegerv(GL_VIEWPORT, viewport);
    
 }
+
 //===========
 void box(float size, float height, int corners)
 {
-  float r = size / 2.0, z = height;
-  float alp = GL_PI/2, corn = (GL_PI*2)/corners;    
-        glBegin(GL_LINE_STRIP);
-		for (int pent=0; pent<=corners; pent++){
-			glNormal3f(0.0, 0.0, 1.0);
-			glVertex3f(r*sin(alp), r*cos(alp), 0.0);
-			glVertex3f(r*sin(alp+corn), r*cos(alp+corn), 0.0);
-			glVertex3f(r*sin(alp), r*cos(alp), z);
-			glVertex3f(r*sin(alp+corn), r*cos(alp+corn), z);
-			alp += corn;
-		}
-        glEnd();
+    float r = size / 2.0, z = height;
+    float alp = GL_PI/2, corn = (GL_PI*2)/corners;    
+    glBegin(GL_LINE_STRIP);
+	for (int pent=0; pent<=corners; pent++){
+		glNormal3f(0.0, 0.0, 1.0);
+		glVertex3f(r*sin(alp), r*cos(alp), 0.0);
+		glVertex3f(r*sin(alp+corn), r*cos(alp+corn), 0.0);
+		glVertex3f(r*sin(alp), r*cos(alp), z);
+		glVertex3f(r*sin(alp+corn), r*cos(alp+corn), z);
+		alp += corn;
+	}
+    glEnd();
 }
 //===========
 void stone(float size)
@@ -186,47 +166,51 @@ void stone(float size)
 	glEnd();
 }
 
-//============
-void disppole()
+//============ 
+//draw field!
+void display_field()
 {
-  GLfloat x,y,z;
-  //draw pole! 
-  //lines
-  glLineWidth(2);
-  glColor3f(1.0f, 1.0f, 1.0f);
-  glTranslatef(-((n+1)*0.1)/2, -((m+1)*0.1)/2, 0.0);
-  x = 0.0f; 
-for(int v=0; v<=n+1; v++){	
-    glBegin(GL_LINES);
-	z = 0.0f;
-	y = 0.0f;
-	glVertex3f(x, y, z);
-	y += (m+1)*0.1;	
-	glVertex3f(x, y, z);
-	glEnd();
-	x += 0.1f;
-}
-y = 0.0f;
-for(int h=0; h<=m+1; h++){	
-    glBegin(GL_LINES);
-	x = 0.0f;
-	glVertex3f(x, y, z);
-	x += (n+1)*0.1;	
-	glVertex3f(x, y, z);
-	glEnd();
-	y += 0.1f;
-}  
-//stone & stuff
-int obj_n = 0, pl, co; 
-unsigned int r,g,b;
+    GLfloat x,y,z;
+     
+    //lines
+    glLineWidth(2);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glTranslatef(-((n+1)*0.1)/2, -((m+1)*0.1)/2, 0.0);
 
-for (int i=0; i<=m; i++)
+    x = 0.0f; 
+    for(int v=0; v<=n+1; v++){	
+        glBegin(GL_LINES);
+	    z = 0.0f;
+	    y = 0.0f;
+	    glVertex3f(x, y, z);
+	    y += (m+1)*0.1;	
+	    glVertex3f(x, y, z);
+	    glEnd();
+	    x += 0.1f;
+    }
+
+    y = 0.0f;
+    for(int h=0; h<=m+1; h++){	
+        glBegin(GL_LINES);
+	    x = 0.0f;
+	    glVertex3f(x, y, z);
+	    x += (n+1)*0.1;	
+	    glVertex3f(x, y, z);
+	    glEnd();
+	    y += 0.1f;
+    }
+    
+    //stone & stuff
+    int obj_n = 0, pl, co; 
+    unsigned int r,g,b;
+
+    for (int i=0; i<=m; i++)
 	  for (int j=0; j<=n; j++){
-		  /*if (doska.getcell_s(i,j)) std::cout << '_'; //check
-		  else std::cout << doska.getcell_c(i,j);     //correct
-		  if (j==doska.get_n()) std::cout << "\n";    //image*/
-		  if (doska.isWall(i,j)) 
-				{
+		  /*if (board.getcell_s(i,j)) std::cout << '_'; //check
+		  else std::cout << board.getcell_c(i,j);     //correct
+		  if (j==board.get_n()) std::cout << "\n";    //image*/
+		  if (board.isWall(i,j)) 
+		  {
 				/*stones*/
 				glPushMatrix();
 				glTranslatef(0.05+0.1*j, 0.05+0.1*i, 0.0f);
@@ -236,8 +220,8 @@ for (int i=0; i<=m; i++)
 				glPopMatrix();				
 		  }
 		  else {
-			  co = doska.pip->level(i,j);
-			  pl = doska.pip->playerNum(i,j);
+			  co = board.pip->level(i,j);
+			  pl = board.pip->playerNum(i,j);
 			  r = colors[pl]>>16;
 			  g = (colors[pl] ^ r<<16)>>8;
 			  b = (colors[pl]^(r<<16 | g<<8));
@@ -245,7 +229,7 @@ for (int i=0; i<=m; i++)
 			  {
 				/*chips*/
 				package::Decart dec;				
-				dec = doska.whereis(i,j,co-1);
+				dec = board.whereis(i,j,co-1);
 
 				std::cout<<i<<' '<<j<<" ("<< co-1<<")\n";
 				std::cout<<"x: "<< dec.x <<"\n";
@@ -266,43 +250,44 @@ for (int i=0; i<=m; i++)
 		  }
 		  obj_n++;
 	  }
-//end pole	
-//  glutSwapBuffers();
-  glFlush();  
+
+    glFlush();  
 }
 
-void Draw(void)
+void draw(void)
 {
-	//doska.rotation(
-	//std::cout<<"hello!";
-  glPushMatrix();
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-1, 1, 1, -1, -2, 2);
-  gluPerspective(30, (float)windW/windH, 0.1, 100);
-  gluLookAt(0, 0, 2, 0, 0, 0, 0, 1, 0);
-  glMatrixMode(GL_MODELVIEW);
-  glClearColor(0.1, 0.0, 0.05, 0.0);
-  glClear(GL_COLOR_BUFFER_BIT);
-  glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
-  glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
-  disppole();
-  glPopMatrix();
-  glutSwapBuffers();
+    glPushMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-1, 1, 1, -1, -2, 2);
+    gluPerspective(30, (float)windW/windH, 0.1, 100);
+    gluLookAt(0, 0, 2, 0, 0, 0, 0, 1, 0);
+    glMatrixMode(GL_MODELVIEW);
+    
+    glClearColor(0.1, 0.0, 0.05, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
+    glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
+    
+    display_field();
+    
+    glPopMatrix();
+    glutSwapBuffers();
 }
 
 //===========
 void ai(){
   int n1=0, n2=0;
   srand ( time(NULL) );		/*initialize random number generator*/
-  if(doska.player->chp_count!=0) {
-	while(!doska.give(n1,n2)){				//######## give #########
+  if(board.player->chp_count!=0) {
+	while(!board.give(n1,n2)){				//######## give #########
 			n1 = rand()%(m+1);
 			n2 = rand()%(n+1);
 	}
   }
   std::cout << n1 << ' ' << n2 << "\n" ;
-  doska.nextpl();
+  board.nextpl();
 }
 //===========
 void FixPos(GLint h)
@@ -310,8 +295,8 @@ void FixPos(GLint h)
 	int ti,tj;
 	ti = h%(n+1);
 	tj = (h-ti)/n;
-	if (doska.give(tj,ti)) doska.nextpl();	//######## give #########
-	while (doska.player->plr!=1) ai();
+	if (board.give(tj,ti)) board.nextpl();	//######## give #########
+	while (board.player->plr!=1) ai();
 }
 
 void YouSelect(int xPos, int yPos)
@@ -337,7 +322,7 @@ void YouSelect(int xPos, int yPos)
   glClear(GL_COLOR_BUFFER_BIT);
   glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
   glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
-  disppole();
+  display_field();
   glPopMatrix();
   glutSwapBuffers();
 //----
@@ -389,7 +374,7 @@ void keyboard(unsigned char key, int x, int y)
    
    switch (key) {
       case 's':
-		 doska.stat3();
+		 board.stat3();
          break;
 	  default:
 		 break;
@@ -400,21 +385,23 @@ void keyboard(unsigned char key, int x, int y)
 int main(int argc, char *argv[])
 {
   glutInit(&argc, argv);
-  glutInitWindowSize(800, 700);//del
-  glutInitWindowPosition(600, 250);//del
-
+  glutInitWindowSize(800, 600);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-  glutCreateWindow("Morrowind");//del
+  glutCreateWindow("Overload");
 
   //glutGameModeString("800x600:32");
   //glutEnterGameMode();
-  Init();
+
+  n = board.get_n();
+  m = board.get_m();
+  board.nextpl();
+
   glutMotionFunc(motion);
   glutMouseFunc(mouse);
-
   glutReshapeFunc(reshape);
-  glutDisplayFunc(Draw);
+  glutDisplayFunc(draw);
   glutKeyboardFunc(keyboard);
+
   glutMainLoop();
   
   return 0;
