@@ -1,0 +1,187 @@
+#include "scene.h"
+
+    /*
+    *  Constructor
+    */
+hbz::hbz(){
+    doska = new playground("pole1.txt");
+    epoch = 0;
+    spin_x = 0;
+    spin_y = 0;
+    windW = 300;
+    windH = 300;
+    moving=0;
+};
+    /*
+    *  Destructor
+    */
+hbz::~hbz()
+{
+    delete doska;
+}
+
+void hbz::Init()
+{
+	//playground doska;
+    n = doska->get_n();
+	m = doska->get_m();
+	//doska->nextpl();
+	//doska->hmuchplayer;
+}
+
+
+//===========
+void hbz::stone(float size)
+{
+	float d = size/2.0;
+	float md = d*0.75;
+	glBegin(GL_LINE_STRIP);
+		glVertex3f(d, d, 0.0);
+		glVertex3f(md, md, 0.02);
+		glVertex3f(md, -md, 0.02);
+		glVertex3f(d, -d, 0.0);
+		glVertex3f(d, d, 0.0);
+		glVertex3f(-d, d, 0.0);
+		glVertex3f(-md, md, 0.02);
+		glVertex3f(-md, -md, 0.02);
+		glVertex3f(-d, -d, 0.0);
+		glVertex3f(-d, d, 0.0);
+	glEnd();
+	glBegin(GL_LINES);
+		glVertex3f(-md, md, 0.02);
+		glVertex3f(md, md, 0.02);
+	glEnd();
+		glBegin(GL_LINES);
+		glVertex3f(-md, -md, 0.02);
+		glVertex3f(md, -md, 0.02);
+	glEnd();
+	glBegin(GL_LINES);
+		glVertex3f(-d, -d, 0.0);
+		glVertex3f(d, -d, 0.0);
+	glEnd();
+}
+
+//============
+void hbz::disppole()
+{
+
+  GLfloat x,y,z;
+  //lines
+  glLineWidth(2);
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glTranslatef(-((n+1)*0.1)/2, -((m+1)*0.1)/2, 0.0);
+  x = 0.0f;
+    for(uint v=0; v<=n+1; v++)
+    {
+        glBegin(GL_LINES);
+        z = 0.0f;
+        y = 0.0f;
+        glVertex3f(x, y, z);
+        y += (m+1)*0.1;
+        glVertex3f(x, y, z);
+        glEnd();
+        x += 0.1f;
+    }
+    y = 0.0f;
+    for(uint h=0; h<=m+1; h++)
+    {
+        glBegin(GL_LINES);
+        x = 0.0f;
+        glVertex3f(x, y, z);
+        x += (n+1)*0.1;
+        glVertex3f(x, y, z);
+        glEnd();
+        y += 0.1f;
+    }
+    //stone & stuff
+    /*stones*/
+    for (uint i=0; i<=m; i++)
+        for (uint j=0; j<=n; j++)
+        {
+            if (doska->isWall(i,j))
+            {
+                glPushMatrix();
+                glTranslatef(0.05+0.1*j, 0.05+0.1*i, 0.0f);
+                glColor3f(0.5, 0.5, 0.5);
+                stone(0.1);
+                glPopMatrix();
+            }
+
+        }
+    /* chips */
+    doska->render();
+}
+
+void hbz::Draw(void)
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  //glOrtho(-1, 1, 1, -1, -2, 2);//this opponent to next row
+  gluPerspective(30, (float)windW/windH, 0.1, 100);
+  //gluLookAt(0, 0, 1.0, 2.0, 4.0, -3.0, 2.0, 2.0, -1.0);
+  gluLookAt(0, -1.2, 1.2, 0, 0, 0, 0, 1, 0);
+  glMatrixMode(GL_MODELVIEW);
+  //glClearColor(0.1, 0.0, 0.05, 0.0);
+  //glClear(GL_COLOR_BUFFER_BIT);
+
+  glPushMatrix();
+  glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
+  glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
+
+  this->disppole();
+
+  const GLfloat light_position[] = { 0.0f, 1.0f, 0.3f, 0.0f };
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+  glPopMatrix();
+  glFlush();
+  //glutSwapBuffers();
+}
+
+//===========
+// this is logic method ->playground
+/*
+void hbz::ai(){
+  int n1=0, n2=0;
+  srand ( time(NULL) );		//== initialize random number generator ==/
+  if(doska->player->chp_count!=0)
+  {
+	while(!doska->isAvailable(n1,n2))
+	{				//######## give #########
+			n1 = rand()%(m+1);
+			n2 = rand()%(n+1);
+	}
+  }
+  std::cout << "ai work: " << n1 << ' ' << n2 << "\n" ;
+  doska->PutChip(n1, n2);
+  if(doska->nextpl()) std::cout << "next turn.\n";
+  else std::cout << "all players are dead.\n";
+}
+*/
+//===========
+void hbz::FixPos(GLint h)
+{
+/*	int ti,tj;
+	ti = h%(n+1);
+	tj = (h-ti)/n;
+*/
+    if(h>=0)
+        doska->PutChip(h);
+    /*
+	if (doska->isAvailable(tj,ti))
+	{
+	    //######## give #########
+	    doska->PutChip(tj, ti);
+	    if(doska->nextpl()) std::cout << "next turn.\n";
+        else std::cout << "all players are dead.\n";
+	}
+	//while (doska->player->plr!=1)
+	ai(); //! very stupid!
+	*/
+}
+
+
+
+
+
+
