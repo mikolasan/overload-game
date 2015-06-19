@@ -1,5 +1,5 @@
 CC=g++
-CFLAFS=-c
+CFLAGS=-g -Wall
 INCLUDES=
 LFLAGS=
 LIBS=-lGL -lGLU -lglut

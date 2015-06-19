@@ -1,7 +1,3 @@
-#include <iostream>
-#include <stdio.h>
-#include <iterator>
-#include "playgrnd.h"
 	
 //playground* board;
 //
@@ -77,16 +73,19 @@
 //		std::cout<<"z: "<< dec.z <<"\n";
 //}
 
+#include "playgrnd.h"
+
 //#include <gl/glut.h>
 #include <GL/glut.h>
 #include <stdlib.h>
+#include <iostream>
 #include <time.h>
 #include <math.h>
 
 #define FSIZE 0.05
 #define MAXOBJS 100
 
-playground board("field1.txt");
+static playground *board;
 
 float spin_x = 0;
 float spin_y = 0;
@@ -206,10 +205,10 @@ void display_field()
 
     for (int i=0; i<=m; i++)
 	  for (int j=0; j<=n; j++){
-		  /*if (board.getcell_s(i,j)) std::cout << '_'; //check
-		  else std::cout << board.getcell_c(i,j);     //correct
-		  if (j==board.get_n()) std::cout << "\n";    //image*/
-		  if (board.isWall(i,j)) 
+		  /*if (board->getcell_s(i,j)) std::cout << '_'; //check
+		  else std::cout << board->getcell_c(i,j);     //correct
+		  if (j==board->get_n()) std::cout << "\n";    //image*/
+		  if (board->isWall(i,j)) 
 		  {
 				/*stones*/
 				glPushMatrix();
@@ -220,8 +219,8 @@ void display_field()
 				glPopMatrix();				
 		  }
 		  else {
-			  co = board.pip->level(i,j);
-			  pl = board.pip->playerNum(i,j);
+			  co = board->pip->level(i,j);
+			  pl = board->pip->playerNum(i,j);
 			  r = colors[pl]>>16;
 			  g = (colors[pl] ^ r<<16)>>8;
 			  b = (colors[pl]^(r<<16 | g<<8));
@@ -229,7 +228,7 @@ void display_field()
 			  {
 				/*chips*/
 				package::Decart dec;				
-				dec = board.whereis(i,j,co-1);
+				dec = board->whereis(i,j,co-1);
 
 				std::cout<<i<<' '<<j<<" ("<< co-1<<")\n";
 				std::cout<<"x: "<< dec.x <<"\n";
@@ -280,14 +279,14 @@ void draw(void)
 void ai(){
   int n1=0, n2=0;
   srand ( time(NULL) );		/*initialize random number generator*/
-  if(board.player->chp_count!=0) {
-	while(!board.give(n1,n2)){				//######## give #########
+  if(board->player->chp_count!=0) {
+	while(!board->give(n1,n2)){				//######## give #########
 			n1 = rand()%(m+1);
 			n2 = rand()%(n+1);
 	}
   }
   std::cout << n1 << ' ' << n2 << "\n" ;
-  board.nextpl();
+  board->nextpl();
 }
 //===========
 void FixPos(GLint h)
@@ -295,8 +294,8 @@ void FixPos(GLint h)
 	int ti,tj;
 	ti = h%(n+1);
 	tj = (h-ti)/n;
-	if (board.give(tj,ti)) board.nextpl();	//######## give #########
-	while (board.player->plr!=1) ai();
+	if (board->give(tj,ti)) board->nextpl();	//######## give #########
+	while (board->player->plr!=1) ai();
 }
 
 void YouSelect(int xPos, int yPos)
@@ -374,7 +373,7 @@ void keyboard(unsigned char key, int x, int y)
    
    switch (key) {
       case 's':
-		 board.stat3();
+		 board->stat3();
          break;
 	  default:
 		 break;
@@ -382,27 +381,31 @@ void keyboard(unsigned char key, int x, int y)
 }
 
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
   glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  //glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
-  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   glutCreateWindow("Overload");
 
   //glutGameModeString("800x600:32");
   //glutEnterGameMode();
-
-  n = board.get_n();
-  m = board.get_m();
-  board.nextpl();
-
-  glutMotionFunc(motion);
-  glutMouseFunc(mouse);
-  glutReshapeFunc(reshape);
+std::cout << "step 1\n";
+  board = new playground("field1.txt");
+  n = board->get_n();
+  m = board->get_m();
+  board->nextpl();
+std::cout << "step 2\n";
+  //glutMotionFunc(motion);
+  //glutMouseFunc(mouse);
+  //glutReshapeFunc(reshape);
   glutDisplayFunc(draw);
-  glutKeyboardFunc(keyboard);
+  //glutKeyboardFunc(keyboard);
 
   glutMainLoop();
   
-  return 0;
+  return 0; /* ANSI C requires main to return int. */
 }
+
+
