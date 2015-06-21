@@ -4,12 +4,12 @@
     *  Constructor
     */
 hbz::hbz(){
-    doska = new playground("pole1.txt");
+    doska = new playground("field1.txt");
     epoch = 0;
     spin_x = 0;
     spin_y = 0;
-    windW = 300;
-    windH = 300;
+    windW = 640;
+    windH = 480;
     moving=0;
 };
     /*
@@ -22,11 +22,42 @@ hbz::~hbz()
 
 void hbz::Init()
 {
-	//playground doska;
     n = doska->get_n();
 	m = doska->get_m();
 	//doska->nextpl();
 	//doska->hmuchplayer;
+	
+	glClearColor(0.04, 0.06, 0.21, 0.0);
+    //glEnable(GL_CULL_FACE); //flip normal when rotated
+    //glCullFace(GL_BACK); //
+
+    glEnable(GL_DEPTH_TEST);
+    //glDepthRange(0, 10.1);
+    //glDepthFunc(GL_GREATER);
+
+    glEnable(GL_NORMALIZE);
+    
+    const GLfloat light_ambient[]  = { 0.0f, 0.0f, 0.0f, 1.0f };
+    const GLfloat light_diffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const GLfloat light_position[] = { 0.0f, 0.0f, 0.3f, 0.0f };
+
+    /*
+    const GLfloat mat_ambient[]    = { 0.7f, 0.7f, 0.7f, 1.0f };
+    const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
+    const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const GLfloat high_shininess[] = { 100.0f };
+    */
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+    
+    glEnable(GL_COLOR_MATERIAL);
 }
 
 
@@ -122,7 +153,7 @@ void hbz::Draw(void)
   gluLookAt(0, -1.2, 1.2, 0, 0, 0, 0, 1, 0);
   glMatrixMode(GL_MODELVIEW);
   //glClearColor(0.1, 0.0, 0.05, 0.0);
-  //glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPushMatrix();
   glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
@@ -135,7 +166,15 @@ void hbz::Draw(void)
 
   glPopMatrix();
   glFlush();
-  //glutSwapBuffers();
+  glutSwapBuffers();
+}
+
+void hbz::reshape(int width, int height)
+{
+    windW = width;
+    windH = height;
+	glViewport(0, 0, windW, windH);
+    glGetIntegerv(GL_VIEWPORT, viewport);
 }
 
 //===========
@@ -179,9 +218,5 @@ void hbz::FixPos(GLint h)
 	ai(); //! very stupid!
 	*/
 }
-
-
-
-
 
 

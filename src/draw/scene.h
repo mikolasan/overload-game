@@ -24,6 +24,7 @@ public:
     uint n,m;
     void Init();
     void Draw(void);
+    void reshape(int width, int height);
     void disppole();
     void FixPos(GLint h);
     //void ai();
