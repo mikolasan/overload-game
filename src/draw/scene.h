@@ -8,7 +8,7 @@
 
 #include "../logic/playgrnd.h"
 
-#define MAXOBJS 100
+
 class hbz{
     playground* doska;
     int old_x, old_y, moving;
@@ -20,15 +20,14 @@ public:
     double epoch;
     GLint windW, windH;
     GLint viewport[4];
-    GLuint selectBuf[MAXOBJS];
+    
     uint n,m;
     void Init();
     void Draw(void);
     void reshape(int width, int height);
     void disppole();
-    void FixPos(GLint h);
-    //void ai();
-
+    void process_hits(GLint h);
+    
     hbz();
     ~hbz();
 

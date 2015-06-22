@@ -5,6 +5,8 @@
     */
 hbz::hbz(){
     doska = new playground("field1.txt");
+    n = doska->get_n();
+	m = doska->get_m();
     epoch = 0;
     spin_x = 0;
     spin_y = 0;
@@ -22,12 +24,7 @@ hbz::~hbz()
 
 void hbz::Init()
 {
-    n = doska->get_n();
-	m = doska->get_m();
-	//doska->nextpl();
-	//doska->hmuchplayer;
-	
-	glClearColor(0.04, 0.06, 0.21, 0.0);
+    glClearColor(0.04, 0.06, 0.21, 0.0);
     //glEnable(GL_CULL_FACE); //flip normal when rotated
     //glCullFace(GL_BACK); //
 
@@ -198,25 +195,10 @@ void hbz::ai(){
 }
 */
 //===========
-void hbz::FixPos(GLint h)
+void hbz::process_hits(GLint h)
 {
-/*	int ti,tj;
-	ti = h%(n+1);
-	tj = (h-ti)/n;
-*/
-    if(h>=0)
-        doska->PutChip(h);
-    /*
-	if (doska->isAvailable(tj,ti))
-	{
-	    //######## give #########
-	    doska->PutChip(tj, ti);
-	    if(doska->nextpl()) std::cout << "next turn.\n";
-        else std::cout << "all players are dead.\n";
-	}
-	//while (doska->player->plr!=1)
-	ai(); //! very stupid!
-	*/
+    std::cout << "fix pos: " << h << std::endl;
+    if(h>=0) doska->PutChip(h);
 }
 
 

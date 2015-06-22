@@ -30,17 +30,36 @@ static void key(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
+#define MAXOBJS 512
+
 void YouSelect(int xPos, int yPos)
 {
-  glSelectBuffer(MAXOBJS, game.selectBuf);
-  glRenderMode(GL_SELECT);
-  glInitNames();
-  glPushName(~0);
+  GLuint selectBuf[MAXOBJS];
+  glSelectBuffer(MAXOBJS, selectBuf); // Specify the array to be used for the returned hit records
+  glRenderMode(GL_SELECT); // Enter selection mode
+  glInitNames(); // Initialize the name stack
+  glPushName(0);
+  // Define the viewing volume you want to use for selection
+  glPushMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPickMatrix(xPos, game.windH - yPos, 4, 4, game.viewport); //! important thing in this method
+  gluPerspective(30, (float)game.windW/game.windH, 0.1, 100);
+  gluLookAt(0, -1.2, 1.2, 0, 0, 0, 0, 1, 0);
+  glMatrixMode(GL_MODELVIEW);
+  glRotatef(game.spin_x, 0.0f, 1.0f, 0.0f);
+  glRotatef(game.spin_y, -1.0f, 0.0f, 0.0f);
+  game.disppole();
+  glPopMatrix();
+  glFlush();
+  glutSwapBuffers();
+  
+  GLint hits = glRenderMode(GL_RENDER);
+  std::cout << "select: " << xPos << ", " << yPos << std::endl;
+  std::cout << "  hits: " << hits << std::endl;
+  if (hits > 0) game.process_hits(selectBuf[(hits - 1) * 4 + 3]);
 
   display();
-
-  GLint hits = glRenderMode(GL_RENDER);
-  if (hits > 0) game.FixPos(game.selectBuf[(hits - 1) * 4 + 3]);
 }
 
 int old_x, old_y, moving=0;
