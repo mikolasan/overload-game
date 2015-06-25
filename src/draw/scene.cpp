@@ -198,7 +198,10 @@ void hbz::ai(){
 void hbz::process_hits(GLint h)
 {
     std::cout << "fix pos: " << h << std::endl;
-    if(h>=0) doska->PutChip(h);
+    if(h>=0){
+    	//doska->PutChip(h);
+    	doska->TestChip(h);
+    }
 }
 
 

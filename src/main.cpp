@@ -88,14 +88,14 @@ void mouse(int button, int state, int x, int y)
 
 void motion(int x, int y)
 {
-  int capt;
+  //int capt;
   if (moving) {
-    capt = game.spin_x + x - old_x;
+    //capt = game.spin_x + x - old_x;
 	//if (capt >= 65) game.spin_x = 65;
 	//else if (capt <= -65) game.spin_x = -65;
 	//else
 	game.spin_x += x - old_x;
-	capt = game.spin_y + y - old_y;
+	//capt = game.spin_y + y - old_y;
 	//if (capt >= 45) game.spin_y = 45;
 	//else if (capt <= -55) game.spin_y = -55;
 	//else
@@ -116,7 +116,7 @@ static void idle(void)
 int main(int argc, char *argv[])
 {
     glutInit(&argc, argv);
-    glutInitWindowSize(640,480);
+    glutInitWindowSize(1024,768);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("Absolute game");
 

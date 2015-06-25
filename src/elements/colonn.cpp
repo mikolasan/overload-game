@@ -2,40 +2,38 @@
 #include "params.h"
 
 // == colonn ==
-colonn::colonn(){
+colonn::colonn() : animationSpeed(100), reserve_size(6)
+{
 	x = 0;
 	y = 0;
 	plr = 0;
-	MySize = 0;
 	animFin = false;
-	epoch = 0;
+	oldTimeSinceStart = 0;
+	CurColonn.reserve(reserve_size);
 }
-colonn::colonn(int x_, int y_, uint plr_)
+colonn::colonn(int x_, int y_, uint plr_) : animationSpeed(100), reserve_size(6)
 {
     x = x_;
     y = y_;
     plr = plr_;
-    MySize = 0;
     animFin = false;
-    epoch = 0;
+    oldTimeSinceStart = 0;
+    CurColonn.reserve(reserve_size);
 }
 
 void colonn::addChip(void){
-	this->MySize++;
 	base* q1 = new base();
-	q1->doOnDejavu( boost::bind(&colonn::setFlag, this) );
+	q1->doOnDejavu( boost::bind(&colonn::checkAnimation, this) );
 	CurColonn.push_back(q1);
 	//CurColonn[CurColonn.size()-1]->doOnDejavu(Hello());
 }
 
 void colonn::delChip(void){
-    if(!CurColonn.empty())
-    {
+    if(!CurColonn.empty()){
         CurColonn.pop_back();
-        this->MySize--;
     }
     else
-        std::cout << "you wanna try to del chip from empty colonn" << std::endl;
+        std::cout << "you wanna try to del a chip from empty colonn" << std::endl;
 
 }
 uint colonn::playerNum(void){
@@ -58,20 +56,22 @@ bool colonn::isMoving(int ind)
     /*
     if(ind>100)
     {
-        std::cout << "i dont now from what place you find thi huge number!!";
+        std::cout << "i don't know from what place you found that huge number!!";
         return false;
     }
     else
     */
+	//std::cout << ind << " isMoving: " << CurColonn[ind]->anime << '\n';
     return CurColonn[ind]->anime;
 }
 
 void colonn::setMoving()
 {
     animFin = false;
-    epoch = 0;
-    for(uint CSize=MySize-2*STARTF; CSize<MySize; CSize++)
-        CurColonn[CSize]->anime = true;//!CurColonn[CSize]->anime;
+    oldTimeSinceStart = glutGet(GLUT_ELAPSED_TIME);
+    for(auto b : CurColonn)
+        b->anime = true;
+    std::cout << "setMoving\n";
 }
 /*
 void colonn::whereis(int i, float &x, float &z){
@@ -86,58 +86,56 @@ void colonn::getCoord(int &x_, int &y_)
 
 bool colonn::render(int obj_n, float x, float y)
 {
-
-    //animFin = false;
     int r,g,b;
     r = colors[plr]>>16;
     g = (colors[plr] ^ r<<16)>>8;
     b = (colors[plr]^(r<<16 | g<<8));
 
-    for(uint CSize=0; CSize<CurColonn.size(); CSize++)
+    float ang = .0;
+	int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
+	int deltaTime = timeSinceStart - oldTimeSinceStart;
+
+	if(deltaTime >= animationSpeed) {
+		ang = GL_PI / 50.f;
+		oldTimeSinceStart = timeSinceStart;
+	}
+
+    for(int CSize=0; CSize<level(); CSize++)
     {
         glPushMatrix();
-        glTranslatef(FISHSIZE+x, FISHSIZE+y, 0.6*FISHSIZE*CSize);
+        glTranslatef(FISHSIZE+x, FISHSIZE+y, 0.6*FISHSIZE*CSize); // center
         if(this->isMoving(CSize))
         {
-            uint Dir;
-            Dir = this->setOrient(CSize,0);
-            double ang;
-            epoch += glutGet(GLUT_ELAPSED_TIME);
-
-            if(epoch>=10*glutGet(GLUT_ELAPSED_TIME))
-            {
-                ang = GL_PI/50.f;
-                epoch = 0;
-            }
-            else
-            {
-                ang = 0;
-            }
+            uint Dir = this->setOrient(CSize,0);
+            float progress = move(CSize, ang) / GL_PI; // [0, 1]
+            float new_angle = 180. * progress;
+            float new_z = 4 * FISHSIZE * sin(GL_PI * progress);
+            float new_y = FISHSIZE * progress;
+            float new_x = new_y;
             switch(Dir)
             {
-                case 1:
-                    glRotatef(-180*this->move(CSize, ang)/GL_PI, 1.0f, 0.0f, 0.0f);
-                    glTranslatef(0.0, 0.0, FISHSIZE+sin(GL_PI*ang/180.));
+                case 4://down
+                    glRotatef(new_angle, 1.0f, 0.0f, 0.0f);
+                    glTranslatef(0.0, new_y, new_z);
                     break;
-                case 2:
-                    glRotatef(180*this->move(CSize, ang)/GL_PI, 1.0f, 0.0f, 0.0f);
-                    glTranslatef(0.0, 0.0, FISHSIZE+sin(GL_PI*ang/180.));
+                case 3://up
+                    glRotatef(new_angle, -1.0f, 0.0f, 0.0f);
+                    glTranslatef(0.0, -new_y, new_z);
                     break;
-                case 3:
-                    glRotatef(180*this->move(CSize, ang)/GL_PI, 0.0f, -1.0f, 0.0f);
-                    glTranslatef(0.0, 0.0, FISHSIZE+sin(GL_PI*ang/180.));
+
+                case 1://left
+                    glRotatef(new_angle, 0.0f, -1.0f, 0.0f);
+                    glTranslatef(-new_x, 0.0, new_z);
                     break;
-                case 4:
-                    glRotatef(-180*this->move(CSize, ang)/GL_PI, 0.0f, -1.0f, 0.0f);
-                    glTranslatef(0.0, 0.0, FISHSIZE+sin(GL_PI*ang/180.));
+                case 2://right
+                    glRotatef(new_angle, 0.0f, 1.0f, 0.0f);
+                    glTranslatef(new_x, 0.0, new_z);
                     break;
             }
-          //if(!this->isMoving(CSize)) animFin = true;
         }
-        //for mouse selection
-        glLoadName(obj_n);
-        //set player color
-        glColor3ub(r,g,b);
+
+        glLoadName(m_id); //for mouse selection
+        glColor3ub(r,g,b); //set player color
         //set material options
         glMaterialfv(GL_FRONT, GL_AMBIENT, no_mat);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
@@ -150,6 +148,7 @@ bool colonn::render(int obj_n, float x, float y)
     if(animFin)
     {
         animFin = false;
+    	std::cout << "render, animFin=" << animFin << '\n';
         return false;
     }
     return true;
@@ -160,15 +159,7 @@ bool colonn::hit(int x_, int y_){
 	return false;
 }
 int colonn::level(void){
-	//if (CurColonn.empty()) return 0;
-	//else return this->CurColonn.size();
-	//b_Iter b1;
-	//int h = 0;
-	//for(b1=CurColonn.begin(); b1!=CurColonn.end(); ++b1){
-	//	if (b1==b_top) return h;
-	//	else h++;
-	//}
-	return this->MySize;
+	return CurColonn.size();
 }
 
 void colonn::stat1(){		// ############ stat ############
@@ -185,15 +176,16 @@ void colonn::stat1(){		// ############ stat ############
 	}
 }
 
-void colonn::setFlag()
+void colonn::checkAnimation()
 {
-    bool con=false;
-    for(uint CSize=0; CSize<CurColonn.size(); CSize++)//MySize - 2*STARTF
-    {
-        con = con || isMoving(CSize);
+    bool animated=false;
+    for(int CSize = 0; CSize < level(); CSize++){
+        animated = animated || isMoving(CSize);
     }
-    animFin = !con;
-    if(!con) //call signal
+
+    animFin = !animated;
+    std::cout << "checkAnimation, animFin=" << animFin << '\n';
+    if(animFin) //call signal
     {
         std::cout << "flag @animation in colonn " << x << ' ' << y << " @ was set" << std::endl;
         continMath(x,y);

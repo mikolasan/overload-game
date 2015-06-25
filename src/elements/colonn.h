@@ -4,14 +4,14 @@
 typedef std::vector<base*>::iterator b_Iter;
 class colonn
 {
-
 	int x,y;
-	uint MySize;
 
 	std::vector<base*> CurColonn;
 	b_Iter b_top;
 	uint plr;
-	double epoch;
+	int oldTimeSinceStart;
+	const int animationSpeed;
+	const int reserve_size;
 	typedef boost::signal<void (int, int)> ContinMath;//signal type
 	boost::signals::connection c;//check connection
 public:
@@ -35,7 +35,7 @@ public:
 	int level(void);
 	//
 	void stat1();
-	void setFlag();//slot
+	void checkAnimation();//slot
 	void doContinMath(const ContinMath::slot_type& slot);//connect
 	void haltContinMath();//disconnect
 private:

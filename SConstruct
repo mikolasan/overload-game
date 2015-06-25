@@ -16,6 +16,7 @@ env['ARCOMSTR'] = link_library_message
 env['SHLINKCOMSTR'] = link_shared_library_message
 env['LINKCOMSTR'] = link_program_message
 
+env.Append(CCFLAGS = ['-std=c++11'])
 env.Append(CCFLAGS = ['-g', '-Wall'])
 env.Append(CPPPATH = ['/usr/include']) # Boost
 

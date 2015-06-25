@@ -192,15 +192,15 @@ bool playground::isAvailable(int x,int y){
     uint person1 = this->playerNum(x, y);
     uint person2 = player->plr;
     if (isWall(x, y))
-    {				//тупо стенка
+    {				//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         return false;
     }
     else if (person1!=person2)
-    {			//не свой игрок
+    {			//пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         return false;
     }
     else
-    {							//все хорошо, тогда
+    {							//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ
         return true;
     }
 }
@@ -214,17 +214,17 @@ void playground::findnminus(int p, int s){
 	iter->chp_count -=s;
 }
 //=========
-void playground::swappoints(int x1, int y1){	//!!использует текущего игрока
-												//(указатель на список player)
+void playground::swappoints(int x1, int y1){	//!!пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+												//(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ player)
 	int expans = player->plr, target=0, prey=0;
 
-	target = this->playerNum(x1, y1);	//игрок на кого падет наша фишка
-	if (target!=expans){				//заходим на чужие фишки
-		this->playerNum(x1, y1, expans);	//помечаем их номером игрока
-		if(target!=0){					//если не пустое поле(там есть фишки)
-			prey = this->level(x1, y1);	//запоминаем
-			player->chp_count += prey;	//добавляем в общий счет накрытые фишки
-			findnminus(target, prey);	//вычитаем
+	target = this->playerNum(x1, y1);	//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	if (target!=expans){				//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		this->playerNum(x1, y1, expans);	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		if(target!=0){					//пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
+			prey = this->level(x1, y1);	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			player->chp_count += prey;	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+			findnminus(target, prey);	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 	}
 }
@@ -264,6 +264,15 @@ void playground::PutChip(int c_num)
             this->nextpl();
 	}
 }
+
+void playground::TestChip(int c_num)
+{
+	Pack[c_num]->setMoving();
+    int x,y;
+    Pack[c_num]->getCoord(x,y);
+	setOrient(x,y);
+}
+
 // and this just for adding new chips
 void playground::PutChip(int x, int y)
 {
@@ -304,7 +313,7 @@ void playground::animationWasFinished(int x1, int y1)//
 }
 //==========
 void playground::explosion(int x_,int y_){
-//###### пересчитать поле (+PutChip)
+//###### пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (+PutChip)
 	player->chp_count-=STARTF*2;	//one list operation
 	bool var, var2, rep_v=false, rep_h=false;
 	this->delChips(x_,y_);			//	pygr[x_][y_].count-=4;
@@ -335,7 +344,7 @@ void playground::explosion(int x_,int y_){
 //============
 //==========
 void playground::setOrient(int x_,int y_){
-//###### узнать направления
+//###### пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	bool var, var2, rep_v=false, rep_h=false;
 	int ch = this->level(x_, y_)-1;						//h
 	for (int i4=0; i4<2; i4++){
@@ -343,10 +352,10 @@ void playground::setOrient(int x_,int y_){
 			if (rep_h) break;
 			//left
 			var = !isWall(x_-1,y_);
-			if(var) Pack[find(x_,y_)]->setOrient(ch--,1);
+			if(var && ch >= 0) Pack[find(x_,y_)]->setOrient(ch--,1);
 			//right
 			var2 = !isWall(x_+1,y_);
-			if(var2) Pack[find(x_,y_)]->setOrient(ch--,2);
+			if(var2 && ch >= 0) Pack[find(x_,y_)]->setOrient(ch--,2);
 			if (var && var2) break;
 			else if (!(var || var2)) rep_h=true;
 		}
@@ -354,10 +363,10 @@ void playground::setOrient(int x_,int y_){
 			if (rep_v) break;
 			//up
 			var = !isWall(x_,y_-1);
-			if(var) Pack[find(x_,y_)]->setOrient(ch--,3);
+			if(var && ch >= 0) Pack[find(x_,y_)]->setOrient(ch--,3);
 			//down
 			var2 = !isWall(x_,y_+1);
-			if(var2) Pack[find(x_,y_)]->setOrient(ch--,4);
+			if(var2 && ch >= 0) Pack[find(x_,y_)]->setOrient(ch--,4);
 			if (var && var2) break;
 			else if (!(var || var2)) rep_v=true;
 		}

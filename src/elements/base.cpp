@@ -13,7 +13,7 @@ float base::rotate(float fi_){
 	this->fi += fi_;
 	if(this->fi >= GL_PI)
 	{
-	    //this->fi = 0;
+	    this->fi = 0;
 	    this->anime = false;
 	    onDejavu();
 

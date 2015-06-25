@@ -54,6 +54,7 @@ public:
 //	void PutChip(int x,int y, bool &vr);
 	void PutChip(int x,int y);
     void PutChip(int c_num);
+    void TestChip(int c_num);
 
     void afterAnimation();
     void animationWasFinished(int x1, int y1);//slot

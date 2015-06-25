@@ -18,6 +18,11 @@
 // == base ==
 class base{
 	float fi;
+	// orientation of animation:
+	//  1 - left
+	//  2 - right
+	//  3 - up
+	//  4 - down
 	uint dir;
 	typedef boost::signal<void ()> OnDejavu;
 

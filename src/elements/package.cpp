@@ -22,8 +22,8 @@ int package::find(int x1, int y1){
 	return -1;
 }
 void package::addChip(int x1, int y1, uint plr){
-	int p1;					//указатель на сущ. столб
-	p1 = find(x1, y1);		//или в конец
+	int p1;					//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ
+	p1 = find(x1, y1);		//пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 	if (p1<0){
 		colonn* w = new colonn(x1,y1,plr);
 		w->addChip();
@@ -34,13 +34,13 @@ void package::addChip(int x1, int y1, uint plr){
 		Pack[p1]->addChip();
 }
 void package::delChips(int x1, int y1){
-	int p1;					//указатель на сущ. столб
-	p1 = find(x1, y1);		//или в конец
+	int p1;					//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ
+	p1 = find(x1, y1);		//пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 	if (p1<0)
 		std::cout << "error:cannot delete colonn " << x1 << ' ' << y1 << " from package \n";
 	else
 	{
-		for(int k=0; k<STARTF*2; k++)	//снять 4 фишки сверху
+		for(int k=0; k<STARTF*2; k++)	//пїЅпїЅпїЅпїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		{
 		    Pack[p1]->delChip();			//
 		    std::cout << "delete chip " << k << " from colonn " << x1 << ' ' << y1 << " \n";
@@ -57,7 +57,7 @@ void package::delChips(int x1, int y1){
 	}
 
 }
-uint package::playerNum(int x1, int y1){ //только показывает номер игрока
+uint package::playerNum(int x1, int y1){ //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	int p1;
 	p1 = find(x1, y1);//find colonn
 	if (p1<0)
@@ -65,16 +65,16 @@ uint package::playerNum(int x1, int y1){ //только показывает номер игрока
 	else
 		return Pack[p1]->playerNum();//that colonn has owner
 }
-uint package::playerNum(int x1, int y1, uint p){	//меняет
+uint package::playerNum(int x1, int y1, uint p){	//пїЅпїЅпїЅпїЅпїЅпїЅ
 	int p1, p2=0;							//
-	p1 = find(x1, y1);						//находим столбец:
-	if (p1<0){								//==1==если это пустое поле
-		colonn* ql = new colonn(x1,y1,p);					//создаем контейнер
-		Pack.push_back(ql);					//с правильным идентом
+	p1 = find(x1, y1);						//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:
+	if (p1<0){								//==1==пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+		colonn* ql = new colonn(x1,y1,p);					//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		Pack.push_back(ql);					//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		PoleSize++;
 	}
-	else									//==2==если столбец существовал
-		p2 = Pack[p1]->playerNum(p);			//просто записываем новый идент
+	else									//==2==пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		p2 = Pack[p1]->playerNum(p);			//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	return p2;
 }
 
@@ -130,15 +130,15 @@ package::Decart package::whereis(int x1, int y1, int lev){
         lev_ = Pack[g].level()-lev; //up, from boots to head
         uint Dir;
         Dir = this->setOrient(x1,y1,lev_,0);
-        coord.x = y1*CELLSIZE + z1*cos(GL_PI/2*Dir);	//х1,i - столбцы(у-ось)
-        coord.y = x1*CELLSIZE + z1*sin(GL_PI/2*Dir);	//у1,j - строки(х-ось)
+        coord.x = y1*CELLSIZE + z1*cos(GL_PI/2*Dir);	//пїЅ1,i - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ(пїЅ-пїЅпїЅпїЅ)
+        coord.y = x1*CELLSIZE + z1*sin(GL_PI/2*Dir);	//пїЅ1,j - пїЅпїЅпїЅпїЅпїЅпїЅ(пїЅ-пїЅпїЅпїЅ)
         coord.z = 0.6*FISHSIZE*(lev_-1) + z2;
         switch(Dir)
         {
             case 0:
                 coord.x -= FISHSIZE;
                 break;
-            case 1:									//лишний код ??
+            case 1:									//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ ??
                 coord.y += FISHSIZE;
                 break;
             case 2:
@@ -176,30 +176,19 @@ int package::animationWasFinished(int &x1, int &y1)
 
 void package::render()
 {
+    if(Pack.empty()) return;
+
     int obj_n=0;
-    if(!Pack.empty())
-    for(v_Iter p=Pack.begin(); p!=Pack.end(); ++p)
+    for(auto p : Pack)
 	{
         int x1,y1;
-	    (*p)->getCoord(x1, y1);
-	    if(!(*p)->render(obj_n, y1*CELLSIZE, x1*CELLSIZE))
+	    p->getCoord(x1, y1);
+	    if(!p->render(obj_n, y1*CELLSIZE, x1*CELLSIZE))
 	    {
 	        glutPostRedisplay();
             break;
 	    }
 	    obj_n++;
-/*
-        if(p->animFin)
-        {
-
-            animation a1;
-            a1.b=true;
-            a1.x = x1;
-            a1.y = y1;
-            animF.push_back(a1);
-            stat2();
-        }
-        */
 	}
 }
 void package::stat2(){		// ############ stat ############
