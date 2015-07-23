@@ -49,7 +49,7 @@ void YouSelect(int xPos, int yPos)
   glMatrixMode(GL_MODELVIEW);
   glRotatef(game.spin_x, 0.0f, 1.0f, 0.0f);
   glRotatef(game.spin_y, -1.0f, 0.0f, 0.0f);
-  game.disppole();
+  game.render_field();
   glPopMatrix();
   glFlush();
   glutSwapBuffers();
@@ -110,7 +110,18 @@ static void idle(void)
 {
     glutPostRedisplay();
 }
+/*
+static void calcposobs(void)
+{
+  dir[0] = sin(alpha * M_PI/180.0); //Работаем с углом поворота alpha оси X
+  dir[2] = cos(alpha * M_PI/180.0) * sin(beta * M_PI/180.0); //Работаем с углом поворота alpha и beta по трем осям одновременно
+  dir[1] = cos(beta * M_PI/180.0); //Работаем с Z
 
+  obs[0] += v*dir[0];
+  obs[1] += v*dir[1];
+  obs[2 ]+= v*dir[2];
+}
+*/
 /* Program entry point */
 
 int main(int argc, char *argv[])

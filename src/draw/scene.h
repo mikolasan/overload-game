@@ -25,7 +25,7 @@ public:
     void Init();
     void Draw(void);
     void reshape(int width, int height);
-    void disppole();
+    void render_field();
     void process_hits(GLint h);
     
     hbz();

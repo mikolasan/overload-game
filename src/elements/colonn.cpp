@@ -53,15 +53,6 @@ float colonn::move(int h, float c){
 }
 bool colonn::isMoving(int ind)
 {
-    /*
-    if(ind>100)
-    {
-        std::cout << "i don't know from what place you found that huge number!!";
-        return false;
-    }
-    else
-    */
-	//std::cout << ind << " isMoving: " << CurColonn[ind]->anime << '\n';
     return CurColonn[ind]->anime;
 }
 
@@ -103,38 +94,43 @@ bool colonn::render(int obj_n, float x, float y)
     for(int CSize=0; CSize<level(); CSize++)
     {
         glPushMatrix();
-        glTranslatef(FISHSIZE+x, FISHSIZE+y, 0.6*FISHSIZE*CSize); // center
+        glTranslatef(FISHSIZE+x, FISHSIZE+y, 0.6*FISHSIZE*0); // center
         if(this->isMoving(CSize))
         {
             uint Dir = this->setOrient(CSize,0);
             float progress = move(CSize, ang) / GL_PI; // [0, 1]
             float new_angle = 180. * progress;
-            float new_z = 4 * FISHSIZE * sin(GL_PI * progress);
+            float new_z = sin(GL_PI * progress);
             float new_y = FISHSIZE * progress;
             float new_x = new_y;
             switch(Dir)
             {
                 case 4://down
-                    glRotatef(new_angle, 1.0f, 0.0f, 0.0f);
-                    glTranslatef(0.0, new_y, new_z);
+                    glRotatef(new_angle, 0.0f, -1.0f, 0.0f);
+                    glTranslatef(-2*FISHSIZE, 0.0, 0.0);
+                    //glTranslatef(0.0, new_y, new_z);
                     break;
                 case 3://up
-                    glRotatef(new_angle, -1.0f, 0.0f, 0.0f);
-                    glTranslatef(0.0, -new_y, new_z);
+                	glRotatef(new_angle, 0.0f, 1.0f, 0.0f);
+                	glTranslatef(2*FISHSIZE, 0.0, 0.0);
+
+                    //glTranslatef(0.0, -new_y, new_z);
                     break;
 
                 case 1://left
-                    glRotatef(new_angle, 0.0f, -1.0f, 0.0f);
-                    glTranslatef(-new_x, 0.0, new_z);
+                    glRotatef(new_angle, -1.0f, 0.0f, 0.0f);
+                	glTranslatef(0.0, -2*FISHSIZE, 0.0);
+                    //glTranslatef(-new_x, 0.0, new_z);
                     break;
                 case 2://right
-                    glRotatef(new_angle, 0.0f, 1.0f, 0.0f);
-                    glTranslatef(new_x, 0.0, new_z);
+                    glRotatef(new_angle, 1.0f, 0.0f, 0.0f);
+                    glTranslatef(0.0, 2*FISHSIZE, 0.0);
+                    //glTranslatef(new_x, 0.0, new_z);
                     break;
             }
         }
 
-        glLoadName(m_id); //for mouse selection
+        glLoadName(obj_n); //for mouse selection
         glColor3ub(r,g,b); //set player color
         //set material options
         glMaterialfv(GL_FRONT, GL_AMBIENT, no_mat);

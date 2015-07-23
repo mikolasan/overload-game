@@ -1,38 +1,34 @@
 #include "playgrnd.h"
+#include <iostream>
+#include <fstream>
+
 // == playground ==
 playground::playground(){
   gamers.clear();			//global init: list
   player = gamers.begin();				//pointer
 
 }
-#include <stdio.h>
+
 playground::playground(std::string fname){// read play ground from file
-  gamers.clear();			//global init: list
+	gamers.clear();			//global init: list
 
-    FILE *file = fopen(fname.c_str(), "r");//open fname.c_str()
-    n=0;
-    m=0;
-    plyr = 0;
-    uint times, nmax=0;
+	n = m = plyr = 0;
 
-  //init array of playground
-    if(file!=NULL)
-    {
-        char i_sym;
-        while(!feof(file))
-        {
-            std::vector<bool> pygr_row;
-            nmax=0;
-            do
-            {
-                times = 0;				//default values
-                pygr_row.push_back(false);	//& here
-                 fscanf(file, "%c", &i_sym);
-                switch (i_sym)
-                 {
+	std::ifstream file(fname);
+    if(file.is_open()) {
+        std::string line;
+        while(std::getline(file, line)) {
+            size_t line_size = line.size();
+            std::vector<bool> pygr_row(line_size, false);
+            std::vector<bool>::iterator flags = pygr_row.begin();
+
+            int nmax = 0;
+            for(std::string::iterator it = line.begin(); it != line.end(); ++it) {
+                char sym = *it;
+                switch (sym) {
                      case '0' :
                          //isWall
-                         pygr_row[nmax] = true;
+                         *flags = true;
                          break;
                      case '1' :
                          //empty cell
@@ -44,23 +40,26 @@ playground::playground(std::string fname){// read play ground from file
                          one.chp_count = STARTF;
                          one.plr = plyr;
                          gamers.push_back(one);
-                         times = STARTF;
+                         for (int g = 0; g < STARTF; g++)
+                        	 addChip(m, nmax, plyr);
                          break;
                  }
-                 for (uint g=0; g<times; g++)
-                    this->addChip(m, nmax, plyr);
                  nmax++;
+                 flags++;
+            }
 
-            } while(i_sym!='\n');
-            nmax--;
-            if(nmax>n) n=nmax;
-            if(nmax!=0) m++;
+            if(nmax > n) n = nmax;
+            if(nmax > 0) m++;
             pygr.push_back(pygr_row);
-
         }
-        fclose(file);
+        file.close();
+    } else {
+    	std::cout <<  "error: not load battleground";
     }
-    else std::cout <<  "error: not load battleground";
+
+    player = gamers.begin();
+
+
 /*   for(int i1=0;i1<m;i1++)
     {
             for(int i2=0;i2<n;i2++)
@@ -78,82 +77,6 @@ playground::playground(std::string fname){// read play ground from file
         nn++;
     }
 */
-    player = gamers.begin();
-}
-//========
-playground::playground(std::string fname, int poletype){// read play ground from file
-  gamers.clear();			//global init: list
-
-    FILE *file = fopen(fname.c_str(), "r");//open fname.c_str()
-    n=0;
-    m=0;
-    uint times, nmax=0;
-
-  //init array of playground
-  listob one;				//local exhibit vector of players
-  one.plr = 1;
-  one.chp_count = 0;
-    if(file!=NULL)
-    {
-        char i_sym;
-        while(!feof(file))
-        {
-            std::vector<bool> pygr_row;
-            nmax=0;
-            do
-            {
-                times = 0;				//default values
-                pygr_row.push_back(false);	//& here
-                 fscanf(file, "%c", &i_sym);
-                switch (i_sym)
-                 {
-                     case '0' :
-                         //isWall
-                         pygr_row[nmax] = true;
-                         break;
-                     case '1' :
-                         //empty cell
-                         break;
-                    case '\n' :
-                         break;
-                    default :
-                         one.chp_count += (int)i_sym - 48;
-                         times = (int)i_sym - 48;
-                         break;
-                 }
-                 for (uint g=0; g<times; g++)
-                    this->addChip(m, nmax, 1);
-                 nmax++;
-
-            } while(i_sym!='\n');
-            nmax--;
-            if(nmax>n) n=nmax;
-            if(nmax!=0) m++;
-            pygr.push_back(pygr_row);
-
-        }
-        fclose(file);
-    }
-    else std::cout <<  "error: not load battleground";
-/*   for(int i1=0;i1<m;i1++)
-    {
-            for(int i2=0;i2<n;i2++)
-            {
-                std::cout << pygr[i1][i2];
-            }
-            std::cout << '\n';
-    }
-*/
-/*
-    int nn=0;
-    for(player=gamers.begin();player!=gamers.end();player++)
-    {
-        std::cout << "player place in list " << nn << " and have plr: " << player->plr << " and chp_count" << player->chp_count << '\n';
-        nn++;
-    }
-*/
-gamers.push_back(one);
-    player = gamers.begin();
 }
 
 bool playground::nextpl()

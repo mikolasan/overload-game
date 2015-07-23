@@ -4,7 +4,7 @@
     *  Constructor
     */
 hbz::hbz(){
-    doska = new playground("field1.txt");
+    doska = new playground("field2.txt");
     n = doska->get_n();
 	m = doska->get_m();
     epoch = 0;
@@ -90,10 +90,24 @@ void hbz::stone(float size)
 }
 
 //============
-void hbz::disppole()
+void hbz::render_field()
 {
 
-  GLfloat x,y,z;
+	glLineWidth(4);
+    //OY (red)
+  glColor3f(.6f, .1f, .1f);
+  glBegin(GL_LINES);
+  glVertex3f(-20., .0, .0);
+  glVertex3f(20., .0, .0);
+  glEnd();
+  //OX (orange)
+  glColor3f(.8f, .5f, .1f);
+	glBegin(GL_LINES);
+	glVertex3f(.0, -20., .0);
+	glVertex3f(.0, 20., .0);
+	glEnd();
+
+	GLfloat x,y,z;
   //lines
   glLineWidth(2);
   glColor3f(1.0f, 1.0f, 1.0f);
@@ -147,16 +161,16 @@ void hbz::Draw(void)
   //glOrtho(-1, 1, 1, -1, -2, 2);//this opponent to next row
   gluPerspective(30, (float)windW/windH, 0.1, 100);
   //gluLookAt(0, 0, 1.0, 2.0, 4.0, -3.0, 2.0, 2.0, -1.0);
-  gluLookAt(0, -1.2, 1.2, 0, 0, 0, 0, 1, 0);
+  gluLookAt(0, 1.2, 1.2, 0, 0, 0, 0, 1, 0);
   glMatrixMode(GL_MODELVIEW);
   //glClearColor(0.1, 0.0, 0.05, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPushMatrix();
-  glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
-  glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
+  //glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
+  //glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
 
-  this->disppole();
+  this->render_field();
 
   const GLfloat light_position[] = { 0.0f, 1.0f, 0.3f, 0.0f };
   glLightfv(GL_LIGHT0, GL_POSITION, light_position);

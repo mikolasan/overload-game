@@ -181,7 +181,7 @@ void package::render()
     int obj_n=0;
     for(auto p : Pack)
 	{
-        int x1,y1;
+        int x1, y1;
 	    p->getCoord(x1, y1);
 	    if(!p->render(obj_n, y1*CELLSIZE, x1*CELLSIZE))
 	    {
