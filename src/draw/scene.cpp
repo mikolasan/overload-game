@@ -10,6 +10,7 @@ hbz::hbz(){
     epoch = 0;
     spin_x = 0;
     spin_y = 0;
+    phi = theta = .0;
     windW = 640;
     windH = 480;
     moving=0;
@@ -95,13 +96,13 @@ void hbz::render_field()
 
 	glLineWidth(4);
     //OY (red)
-  glColor3f(.6f, .1f, .1f);
+  glColor3f(.9f, .1f, .1f);
   glBegin(GL_LINES);
   glVertex3f(-20., .0, .0);
   glVertex3f(20., .0, .0);
   glEnd();
-  //OX (orange)
-  glColor3f(.8f, .5f, .1f);
+  //OX (green)
+  glColor3f(.1f, .9f, .1f);
 	glBegin(GL_LINES);
 	glVertex3f(.0, -20., .0);
 	glVertex3f(.0, 20., .0);
@@ -154,28 +155,48 @@ void hbz::render_field()
     doska->render();
 }
 
-void hbz::Draw(void)
+void hbz::Draw(int xPos, int yPos)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+
+  if (xPos > 0 && yPos > 0) {
+	  gluPickMatrix(xPos, windH - yPos, 4, 4, viewport);
+  }
+
   //glOrtho(-1, 1, 1, -1, -2, 2);//this opponent to next row
   gluPerspective(30, (float)windW/windH, 0.1, 100);
   //gluLookAt(0, 0, 1.0, 2.0, 4.0, -3.0, 2.0, 2.0, -1.0);
-  gluLookAt(0, 1.2, 1.2, 0, 0, 0, 0, 1, 0);
-  glMatrixMode(GL_MODELVIEW);
+
+  GLfloat r = 2.0;
+  GLfloat eye[] = {0., 0., 0.};
+  eye[0] = r * cos(phi) * sin(theta);
+  eye[1] = r * sin(phi) * sin(theta);
+  eye[2] = r * cos(theta);
+
+  GLfloat at[] = {0., 0., 0.};
+  GLfloat up[] = {0., 1., 0.};
+  up[0] = sin(phi);
+  up[1] = cos(phi);
+
+  gluLookAt(eye[0], eye[1], eye[2],
+		  at[0], at[1], at[2],
+		  up[0], up[1], up[2]);
+
   //glClearColor(0.1, 0.0, 0.05, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-  //glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
-  //glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
-
-  this->render_field();
 
   const GLfloat light_position[] = { 0.0f, 1.0f, 0.3f, 0.0f };
   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
+  //glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
+  //glRotatef(spin_y, -1.0f, 0.0f, 0.0f);
+  this->render_field();
   glPopMatrix();
+
   glFlush();
   glutSwapBuffers();
 }

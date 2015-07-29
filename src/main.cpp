@@ -19,14 +19,28 @@ static void display(void)
 
 static void key(unsigned char key, int x, int y)
 {
+	GLfloat rad = 2 * GL_PI / 360;
+
     switch (key)
     {
         case 27 :
         case 'q':
             exit(0);
             break;
+        case 'w':
+      		game.phi += rad;
+      		break;
+        case 'a':
+        	game.theta += rad;
+        	break;
+        case 's':
+			game.phi -= rad;
+			break;
+		case 'd':
+			game.theta -= rad;
+			break;
     }
-
+    std::cout << "phi: " << game.phi << " theta:" << game.theta << "\n";
     glutPostRedisplay();
 }
 
@@ -39,21 +53,9 @@ void YouSelect(int xPos, int yPos)
   glRenderMode(GL_SELECT); // Enter selection mode
   glInitNames(); // Initialize the name stack
   glPushName(0);
-  // Define the viewing volume you want to use for selection
-  glPushMatrix();
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPickMatrix(xPos, game.windH - yPos, 4, 4, game.viewport); //! important thing in this method
-  gluPerspective(30, (float)game.windW/game.windH, 0.1, 100);
-  gluLookAt(0, -1.2, 1.2, 0, 0, 0, 0, 1, 0);
-  glMatrixMode(GL_MODELVIEW);
-  glRotatef(game.spin_x, 0.0f, 1.0f, 0.0f);
-  glRotatef(game.spin_y, -1.0f, 0.0f, 0.0f);
-  game.render_field();
-  glPopMatrix();
-  glFlush();
-  glutSwapBuffers();
-  
+
+  game.Draw(xPos, yPos);
+
   GLint hits = glRenderMode(GL_RENDER);
   std::cout << "select: " << xPos << ", " << yPos << std::endl;
   std::cout << "  hits: " << hits << std::endl;
@@ -90,16 +92,15 @@ void motion(int x, int y)
 {
   //int capt;
   if (moving) {
-    //capt = game.spin_x + x - old_x;
-	//if (capt >= 65) game.spin_x = 65;
-	//else if (capt <= -65) game.spin_x = -65;
-	//else
-	game.spin_x += x - old_x;
-	//capt = game.spin_y + y - old_y;
-	//if (capt >= 45) game.spin_y = 45;
-	//else if (capt <= -55) game.spin_y = -55;
-	//else
-	game.spin_y += y - old_y;
+	int dx = x - old_x;
+	int dy = y - old_y;
+	game.spin_x += dx;
+	game.spin_y += dy;
+
+	GLfloat rad = 2 * GL_PI / 360;
+	game.phi += dx > 0 ? 1*rad : -1*rad;
+	game.theta += dy > 0 ? 1*rad : -1*rad;
+
 	old_x = x;
 	old_y = y;
 	glutPostRedisplay();
