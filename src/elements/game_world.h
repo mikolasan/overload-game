@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
+#include "../input.h"
 
 class GameWorld {
 public:
@@ -8,6 +10,8 @@ public:
   ~GameWorld();
 
   void setup();
+  void update(const std::unique_ptr<Input>& input);
+  void loop();
 
   std::vector<std::vector<bool>> level_map;
 private:

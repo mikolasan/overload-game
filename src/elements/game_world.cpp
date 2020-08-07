@@ -10,6 +10,22 @@ void GameWorld::setup() {
   read_level_map("field1.txt");
 }
 
+void update(const std::unique_ptr<Input>& input) {
+  running = true;
+  while (running) {
+    int key = input->wait_for_key();
+    if (key != ERR) {
+      switch(key) {
+
+      }
+    }
+  }
+}
+
+void loop() {
+
+}
+
 void GameWorld::read_level_map(std::string level_file) {
   std::ifstream file(level_file);
   if(!file.is_open()) {

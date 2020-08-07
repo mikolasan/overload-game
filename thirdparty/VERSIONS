@@ -1,0 +1,9 @@
+# Versions
+
+## PDCurses
+
+git clone https://github.com/wmcbrine/PDCurses.git PDCurses
+git checkout 618e0aa
+git remote add pxntus https://github.com/pxntus/PDCurses.git
+git fetch pxntus
+git cherry-pick ed40e45
