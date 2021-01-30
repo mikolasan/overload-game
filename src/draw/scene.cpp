@@ -1,101 +1,96 @@
 #include "scene.h"
 
-    /*
-    *  Constructor
-    */
-hbz::hbz(){
-    doska = new playground("field2.txt");
-    n = doska->get_n();
-	m = doska->get_m();
-    epoch = 0;
-    spin_x = 0;
-    spin_y = 0;
-    phi = theta = .0;
-    windW = 640;
-    windH = 480;
-    moving=0;
+hbz::hbz()
+{
+  doska = new playground("field2.txt");
+  n = doska->get_n();
+  m = doska->get_m();
+  epoch = 0;
+  spin_x = 0;
+  spin_y = 0;
+  phi = theta = .0;
+  windW = 640;
+  windH = 480;
+  moving = 0;
 };
-    /*
-    *  Destructor
-    */
+
 hbz::~hbz()
 {
-    delete doska;
+  delete doska;
 }
 
 void hbz::Init()
 {
-    glClearColor(0.04, 0.06, 0.21, 0.0);
-    //glEnable(GL_CULL_FACE); //flip normal when rotated
-    //glCullFace(GL_BACK); //
+  glClearColor(0.04, 0.06, 0.21, 0.0);
+  //glEnable(GL_CULL_FACE); //flip normal when rotated
+  //glCullFace(GL_BACK); //
 
-    glEnable(GL_DEPTH_TEST);
-    //glDepthRange(0, 10.1);
-    //glDepthFunc(GL_GREATER);
+  glEnable(GL_DEPTH_TEST);
+  //glDepthRange(0, 10.1);
+  //glDepthFunc(GL_GREATER);
 
-    glEnable(GL_NORMALIZE);
-    
-    const GLfloat light_ambient[]  = { 0.0f, 0.0f, 0.0f, 1.0f };
-    const GLfloat light_diffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-    const GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    const GLfloat light_position[] = { 0.0f, 0.0f, 0.3f, 0.0f };
+  glEnable(GL_NORMALIZE);
 
-    /*
+  const GLfloat light_ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
+  const GLfloat light_diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  const GLfloat light_position[] = {0.0f, 0.0f, 0.3f, 0.0f};
+
+  /*
     const GLfloat mat_ambient[]    = { 0.7f, 0.7f, 0.7f, 1.0f };
     const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
     const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
     const GLfloat high_shininess[] = { 100.0f };
     */
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 
-    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-    
-    glEnable(GL_COLOR_MATERIAL);
+  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+
+  glEnable(GL_COLOR_MATERIAL);
 }
-
 
 //===========
 void hbz::stone(float size)
 {
-	float d = size/2.0;
-	float md = d*0.75;
-	glBegin(GL_LINE_STRIP);
-		glVertex3f(d, d, 0.0);
-		glVertex3f(md, md, 0.02);
-		glVertex3f(md, -md, 0.02);
-		glVertex3f(d, -d, 0.0);
-		glVertex3f(d, d, 0.0);
-		glVertex3f(-d, d, 0.0);
-		glVertex3f(-md, md, 0.02);
-		glVertex3f(-md, -md, 0.02);
-		glVertex3f(-d, -d, 0.0);
-		glVertex3f(-d, d, 0.0);
-	glEnd();
-	glBegin(GL_LINES);
-		glVertex3f(-md, md, 0.02);
-		glVertex3f(md, md, 0.02);
-	glEnd();
-		glBegin(GL_LINES);
-		glVertex3f(-md, -md, 0.02);
-		glVertex3f(md, -md, 0.02);
-	glEnd();
-	glBegin(GL_LINES);
-		glVertex3f(-d, -d, 0.0);
-		glVertex3f(d, -d, 0.0);
-	glEnd();
+  float d = size / 2.0;
+  float md = d * 0.75;
+  glBegin(GL_LINE_STRIP);
+  glVertex3f(d, d, 0.0);
+  glVertex3f(md, md, 0.02);
+  glVertex3f(md, -md, 0.02);
+  glVertex3f(d, -d, 0.0);
+  glVertex3f(d, d, 0.0);
+  glVertex3f(-d, d, 0.0);
+  glVertex3f(-md, md, 0.02);
+  glVertex3f(-md, -md, 0.02);
+  glVertex3f(-d, -d, 0.0);
+  glVertex3f(-d, d, 0.0);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(-md, md, 0.02);
+  glVertex3f(md, md, 0.02);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(-md, -md, 0.02);
+  glVertex3f(md, -md, 0.02);
+  glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(-d, -d, 0.0);
+  glVertex3f(d, -d, 0.0);
+  glEnd();
 }
 
 //============
 void hbz::render_field()
 {
 
-	glLineWidth(4);
-    //OY (red)
+  glLineWidth(4);
+  //OY (red)
   glColor3f(.9f, .1f, .1f);
   glBegin(GL_LINES);
   glVertex3f(-20., .0, .0);
@@ -103,56 +98,55 @@ void hbz::render_field()
   glEnd();
   //OX (green)
   glColor3f(.1f, .9f, .1f);
-	glBegin(GL_LINES);
-	glVertex3f(.0, -20., .0);
-	glVertex3f(.0, 20., .0);
-	glEnd();
+  glBegin(GL_LINES);
+  glVertex3f(.0, -20., .0);
+  glVertex3f(.0, 20., .0);
+  glEnd();
 
-	GLfloat x,y,z;
+  GLfloat x, y, z;
   //lines
   glLineWidth(2);
   glColor3f(1.0f, 1.0f, 1.0f);
-  glTranslatef(-((n+1)*0.1)/2, -((m+1)*0.1)/2, 0.0);
+  glTranslatef(-((n + 1) * 0.1) / 2, -((m + 1) * 0.1) / 2, 0.0);
   x = 0.0f;
-    for(uint v=0; v<=n+1; v++)
-    {
-        glBegin(GL_LINES);
-        z = 0.0f;
-        y = 0.0f;
-        glVertex3f(x, y, z);
-        y += (m+1)*0.1;
-        glVertex3f(x, y, z);
-        glEnd();
-        x += 0.1f;
-    }
+  for (uint v = 0; v <= n + 1; v++)
+  {
+    glBegin(GL_LINES);
+    z = 0.0f;
     y = 0.0f;
-    for(uint h=0; h<=m+1; h++)
+    glVertex3f(x, y, z);
+    y += (m + 1) * 0.1;
+    glVertex3f(x, y, z);
+    glEnd();
+    x += 0.1f;
+  }
+  y = 0.0f;
+  for (uint h = 0; h <= m + 1; h++)
+  {
+    glBegin(GL_LINES);
+    x = 0.0f;
+    glVertex3f(x, y, z);
+    x += (n + 1) * 0.1;
+    glVertex3f(x, y, z);
+    glEnd();
+    y += 0.1f;
+  }
+  //stone & stuff
+  /*stones*/
+  for (uint i = 0; i <= m; i++)
+    for (uint j = 0; j <= n; j++)
     {
-        glBegin(GL_LINES);
-        x = 0.0f;
-        glVertex3f(x, y, z);
-        x += (n+1)*0.1;
-        glVertex3f(x, y, z);
-        glEnd();
-        y += 0.1f;
+      if (doska->isWall(i, j))
+      {
+        glPushMatrix();
+        glTranslatef(0.05 + 0.1 * j, 0.05 + 0.1 * i, 0.0f);
+        glColor3f(0.5, 0.5, 0.5);
+        stone(0.1);
+        glPopMatrix();
+      }
     }
-    //stone & stuff
-    /*stones*/
-    for (uint i=0; i<=m; i++)
-        for (uint j=0; j<=n; j++)
-        {
-            if (doska->isWall(i,j))
-            {
-                glPushMatrix();
-                glTranslatef(0.05+0.1*j, 0.05+0.1*i, 0.0f);
-                glColor3f(0.5, 0.5, 0.5);
-                stone(0.1);
-                glPopMatrix();
-            }
-
-        }
-    /* chips */
-    doska->render();
+  /* chips */
+  doska->render();
 }
 
 void hbz::Draw(int xPos, int yPos)
@@ -160,12 +154,13 @@ void hbz::Draw(int xPos, int yPos)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  if (xPos > 0 && yPos > 0) {
-	  gluPickMatrix(xPos, windH - yPos, 4, 4, viewport);
+  if (xPos > 0 && yPos > 0)
+  {
+    gluPickMatrix(xPos, windH - yPos, 4, 4, viewport);
   }
 
   //glOrtho(-1, 1, 1, -1, -2, 2);//this opponent to next row
-  gluPerspective(30, (float)windW/windH, 0.1, 100);
+  gluPerspective(30, (float)windW / windH, 0.1, 100);
   //gluLookAt(0, 0, 1.0, 2.0, 4.0, -3.0, 2.0, 2.0, -1.0);
 
   GLfloat r = 2.0;
@@ -180,8 +175,8 @@ void hbz::Draw(int xPos, int yPos)
   up[1] = cos(phi);
 
   gluLookAt(eye[0], eye[1], eye[2],
-		  at[0], at[1], at[2],
-		  up[0], up[1], up[2]);
+            at[0], at[1], at[2],
+            up[0], up[1], up[2]);
 
   //glClearColor(0.1, 0.0, 0.05, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -189,7 +184,7 @@ void hbz::Draw(int xPos, int yPos)
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
-  const GLfloat light_position[] = { 0.0f, 1.0f, 0.3f, 0.0f };
+  const GLfloat light_position[] = {0.0f, 1.0f, 0.3f, 0.0f};
   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
   //glRotatef(spin_x, 0.0f, 1.0f, 0.0f);
@@ -203,10 +198,10 @@ void hbz::Draw(int xPos, int yPos)
 
 void hbz::reshape(int width, int height)
 {
-    windW = width;
-    windH = height;
-	glViewport(0, 0, windW, windH);
-    glGetIntegerv(GL_VIEWPORT, viewport);
+  windW = width;
+  windH = height;
+  glViewport(0, 0, windW, windH);
+  glGetIntegerv(GL_VIEWPORT, viewport);
 }
 
 //===========
@@ -232,11 +227,10 @@ void hbz::ai(){
 //===========
 void hbz::process_hits(GLint h)
 {
-    std::cout << "fix pos: " << h << std::endl;
-    if(h>=0){
-    	//doska->PutChip(h);
-    	doska->TestChip(h);
-    }
+  std::cout << "fix pos: " << h << std::endl;
+  if (h >= 0)
+  {
+    //doska->PutChip(h);
+    doska->TestChip(h);
+  }
 }
-
-

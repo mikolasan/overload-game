@@ -22,3 +22,10 @@ int Input::wait_for_key() {
   while (!key_pressed()) {}
   return get_key();
 }
+
+int Input::get_key()
+{
+  nodelay(stdscr, TRUE);
+  int ch = getch();
+  return ch;
+}

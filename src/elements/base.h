@@ -16,7 +16,8 @@
 #define STARTF 2
 
 // == base ==
-class base{
+class base
+{
 	float fi;
 	// orientation of animation:
 	//  1 - left
@@ -24,18 +25,24 @@ class base{
 	//  3 - up
 	//  4 - down
 	uint dir;
-	typedef boost::signal<void ()> OnDejavu;
+	typedef boost::signal<void()> OnDejavu;
 
 public:
-    bool anime;
-	base(){fi=0; dir=1; anime=false; };
+	bool anime;
+	base()
+	{
+		fi = 0;
+		dir = 1;
+		anime = false;
+	};
 	float rotate(float fi_);
 
-	void doOnDejavu(const OnDejavu::slot_type& slot);
+	void doOnDejavu(const OnDejavu::slot_type &slot);
 	uint setOrient(uint d1);
 	//void whereis(float &x, float &z);
 	void render(float size, float height, int corners);
+
 private:
-    OnDejavu onDejavu;
+	OnDejavu onDejavu;
 };
 ///----
