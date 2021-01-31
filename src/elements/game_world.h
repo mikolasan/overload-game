@@ -1,10 +1,13 @@
 #pragma once
+
 #include <functional>
 #include <string>
+#include <map>
 #include <vector>
 #include <memory>
 #include <utility>
 #include "../input.h"
+#include "../logic/player.h"
 
 class GameWorld
 {
@@ -18,7 +21,10 @@ public:
   void draw(std::function<void(void)> draw_fn);
   void loop();
 
-  std::vector<std::vector<bool>> level_map;
+  const std::unique_ptr<Player>& get_player(int id) const;
+
+  std::vector<std::vector<bool>> walls;
+  std::vector<std::vector<int>> level_map;
   std::pair<int, int> cursor_position;
 
 private:
@@ -26,4 +32,5 @@ private:
   std::function<void(void)> _update_fn;
   std::function<void(void)> _draw_fn;
   bool _running;
+  std::map<int, std::unique_ptr<Player>> _players;
 };

@@ -2,6 +2,14 @@
 #include <iostream>
 #include <curses.h>
 
+namespace
+{
+  void set_color(int color_id, short foreground_color)
+  {
+    init_pair(color_id, foreground_color, COLOR_BLACK);
+  }
+};
+
 ConsoleRenderer::ConsoleRenderer()
     : _running(false)
 {
@@ -11,6 +19,15 @@ ConsoleRenderer::ConsoleRenderer()
   nonl();
   // keypad(stdscr, TRUE);
   curs_set(0);
+
+  if (has_colors())
+  {
+    start_color();
+  }
+  set_color(1, COLOR_RED);
+  set_color(2, COLOR_GREEN);
+  set_color(3, COLOR_WHITE);
+  set_color(4, COLOR_YELLOW);
 }
 
 ConsoleRenderer::~ConsoleRenderer()
@@ -24,19 +41,41 @@ ConsoleRenderer::~ConsoleRenderer()
 void ConsoleRenderer::draw(const std::unique_ptr<GameWorld> &world)
 {  
   auto map = world->level_map;
+  auto [cursor_x, cursor_y] = world->cursor_position;
+  attrset(A_NORMAL);
+  erase();
   for (int i = 0; i < map.size(); ++i)
   {
     //for (auto line : map) {
     //for (auto b : line) {
     for (int j = 0; j < map[i].size(); ++j)
     {
+      chtype bold = (cursor_x == i && cursor_y == j) ? A_BOLD : A_NORMAL;
       move(i, j); // y, x
-      addch(map[i][j] ? '0' : '.');
+      auto cell = map[i][j];
+      if (cell == 0)
+      {
+        attrset(bold);
+        addch('.');
+      }
+      else if (cell >= 0)
+      {
+        int player_id = cell;
+        const auto& player = world->get_player(player_id);
+        int n_chips = player->get_n_chips(j, i);
+        attrset(COLOR_PAIR(player_id) | bold);
+        addch('0' + n_chips);
+      }
+      else
+      {
+        addch('#');
+      }
+      
       //std::cout << b ? "0" : ".";
     }
     //std::cout << std::endl;
   }
-  printw("Cursor: %d %d\n", std::get<0>(world->cursor_position), std::get<1>(world->cursor_position));
+  // printw("Cursor: %d %d\n", cursor_x, cursor_y);
   napms(12);
   // move(LINES - 1, COLS - 1);
   refresh();

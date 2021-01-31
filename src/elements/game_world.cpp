@@ -1,5 +1,5 @@
-#include "../draw/renderer.h"
 #include "game_world.h"
+#include "../draw/renderer.h"
 #include <fstream>
 #include <iostream>
 #include <curses.h>
@@ -60,6 +60,11 @@ void GameWorld::loop()
   }
 }
 
+const std::unique_ptr<Player> &GameWorld::get_player(int id) const
+{
+  return _players.at(id);
+}
+
 void GameWorld::read_level_map(std::string level_file)
 {
   std::ifstream file(level_file);
@@ -70,42 +75,50 @@ void GameWorld::read_level_map(std::string level_file)
   }
 
   std::string line;
+  int y = 0;
   while (std::getline(file, line))
   {
     size_t line_size = line.size();
-    std::vector<bool> row(line_size, false);
-    std::vector<bool>::iterator flags = row.begin();
+    std::vector<int> row(line_size);
+    auto marker = row.begin();
+    std::vector<bool> wall_line(line_size, false);
+    auto wall_marker = wall_line.begin();
 
-    // int nmax = 0;
+    int x = 0;
     for (auto it = line.begin(); it != line.end(); ++it)
     {
       char sym = *it;
       switch (sym)
       {
-      case '0':
-        //isWall
-        *flags = true;
+      case '#':
+        *wall_marker = true;
+        *marker = -1;
+        break;
+      case '.':
+        // empty cell
         break;
       case '1':
-        //empty cell
-        break;
       case '2':
-        //player start position
-        // plyr++;
-        // listob one;				//local exhibit vector of players
-        // one.chp_count = STARTF;
-        // one.plr = plyr;
-        // gamers.push_back(one);
-        // for (int g = 0; g < STARTF; g++)
-        //   addChip(m, nmax, plyr);
+      case '3':
+      case '4':
+      {
+        // players
+        int id = sym - '0';
+        *marker = id;
+        _players[id] = std::make_unique<Player>(x, y, id);
         break;
       }
-      // nmax++;
-      flags++;
+      default:
+        std::cerr << "read unknown symbol '" << sym << "'\n";
+        break;
+      }
+      ++wall_marker;
+      ++marker;
+      ++x;
     }
+    ++y;
 
-    // if(nmax > n) n = nmax;
-    // if(nmax > 0) m++;
+    walls.push_back(wall_line);
     level_map.push_back(row);
   }
   file.close();
