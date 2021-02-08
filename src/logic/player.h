@@ -1,9 +1,10 @@
 #pragma once
 
+#include <functional>
 #include <map>
 #include "../elements/chip.h"
 
-namespace 
+namespace
 {
   const int n_start_chips = 2;
 }
@@ -11,21 +12,29 @@ namespace
 class Player
 {
 public:
-  Player(int x, int y, int id) : _id(id), _total_n_chips(n_start_chips)
+  enum class ControlType {
+    HUMAN,
+    AI,
+  };
+  Player(int x, int y, int id) : id(id), _total_n_chips(n_start_chips)
   {
     Chip chip{
-      .x = x,
-      .y = y,
-      .player_id = id,
-      .size = n_start_chips,
+        .x = x,
+        .y = y,
+        .player_id = id,
+        .size = n_start_chips,
     };
-    _chips[{x, y}] = chip;
-  };
-  ~Player() {};
+    chips[{x, y}] = chip;
+  }
+  ~Player(){}
 
-  int get_n_chips(int x, int y) { return _chips[{x, y}].size; };
+  int get_n_chips(int x, int y) { return chips[{x, y}].size; }
+  bool build_here(int x, int y, int k, std::function<void(int, int)> callback);
+  // void explode(int x, int y);
+  ControlType control_type;
+  std::map<std::pair<int, int>, Chip> chips;
+  int id;
+
 private:
-  std::map<std::pair<int, int>, Chip> _chips;
-  int _id;
   int _total_n_chips;
 };

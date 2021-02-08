@@ -16,6 +16,7 @@ include_directories(thirdparty/PDCurses)
 add_executable(overload
   src/draw/console.cpp
   src/elements/game_world.cpp
+  src/logic/player.cpp
   src/overload.cpp
   src/input.cpp)
 

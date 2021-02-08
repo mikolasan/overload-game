@@ -21,7 +21,19 @@ public:
   void draw(std::function<void(void)> draw_fn);
   void loop();
 
-  const std::unique_ptr<Player>& get_player(int id) const;
+  void set_player_control(int player_id, int control);
+  const std::shared_ptr<Player>& get_player(int id) const;
+  void reset_player_order();
+  void next_player();
+  void on_next_player();
+  void ai_turn(int player_id);
+  void explode(std::shared_ptr<Player> player, int x, int y);
+  int add_left(std::shared_ptr<Player> player, int x, int y, int k);
+  int add_right(std::shared_ptr<Player> player, int x, int y, int k);
+  int add_up(std::shared_ptr<Player> player, int x, int y, int k);
+  int add_down(std::shared_ptr<Player> player, int x, int y, int k);
+  int get_cursor_x() const;
+  int get_cursor_y() const;
 
   std::vector<std::vector<bool>> walls;
   std::vector<std::vector<int>> level_map;
@@ -29,8 +41,11 @@ public:
 
 private:
   void read_level_map(std::string level_file);
+
   std::function<void(void)> _update_fn;
   std::function<void(void)> _draw_fn;
   bool _running;
-  std::map<int, std::unique_ptr<Player>> _players;
+  using Players = std::map<int, std::shared_ptr<Player>>;
+  Players _players;
+  Players::iterator _current_player;
 };
