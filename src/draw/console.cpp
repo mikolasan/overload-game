@@ -44,15 +44,15 @@ void ConsoleRenderer::draw(const std::unique_ptr<GameWorld> &world)
   auto [cursor_x, cursor_y] = world->cursor_position;
   attrset(A_NORMAL);
   erase();
-  for (int i = 0; i < map.size(); ++i)
+  for (int y = 0; y < map.size(); ++y)
   {
     //for (auto line : map) {
     //for (auto b : line) {
-    for (int j = 0; j < map[i].size(); ++j)
+    for (int x = 0; x < map[y].size(); ++x)
     {
-      chtype bold = (cursor_x == i && cursor_y == j) ? A_BOLD : A_NORMAL;
-      move(i, j); // y, x
-      auto cell = map[i][j];
+      chtype bold = (cursor_x == x && cursor_y == y) ? A_BOLD : A_NORMAL;
+      move(y, x);
+      auto cell = map[y][x];
       if (cell == 0)
       {
         attrset(bold);
@@ -60,14 +60,15 @@ void ConsoleRenderer::draw(const std::unique_ptr<GameWorld> &world)
       }
       else if (cell >= 0)
       {
-        int player_id = cell;
-        const auto& player = world->get_player(player_id);
-        int n_chips = player->get_n_chips(j, i);
+        // int player_id = cell;
+        // const auto& player = world->get_player(player_id);
+        auto [player_id, n_chips] = world->get_chips(x, y);
         attrset(COLOR_PAIR(player_id) | bold);
         addch('0' + n_chips);
       }
       else
       {
+        attrset(bold);
         addch('#');
       }
       

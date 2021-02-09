@@ -34,6 +34,8 @@ public:
   int add_down(std::shared_ptr<Player> player, int x, int y, int k);
   int get_cursor_x() const;
   int get_cursor_y() const;
+  std::pair<int, int> get_chips(int x, int y) const;
+  void build_here(int x, int y, int k = 1);
 
   std::vector<std::vector<bool>> walls;
   std::vector<std::vector<int>> level_map;
@@ -48,4 +50,6 @@ private:
   using Players = std::map<int, std::shared_ptr<Player>>;
   Players _players;
   Players::iterator _current_player;
+  using Chips = std::map<std::pair<int, int>, std::shared_ptr<Chip>>;
+  Chips _all_chips;
 };

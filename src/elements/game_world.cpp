@@ -13,7 +13,7 @@ GameWorld::~GameWorld() {}
 
 void GameWorld::setup()
 {
-  read_level_map("field1.txt");
+  read_level_map("field3.txt");
   if (_players.empty()) {
     std::cerr << "No players!\n";
   }
@@ -24,8 +24,8 @@ void GameWorld::setup()
 void GameWorld::set_player_control(int player_id, int control) {
   _players[1]->control_type = Player::ControlType::HUMAN;
   _players[2]->control_type = Player::ControlType::AI;
-  _players[3]->control_type = Player::ControlType::AI;
-  _players[4]->control_type = Player::ControlType::AI;
+  // _players[3]->control_type = Player::ControlType::AI;
+  // _players[4]->control_type = Player::ControlType::AI;
 }
 
 void GameWorld::reset_player_order() {
@@ -47,25 +47,66 @@ void GameWorld::on_next_player() {
   // else wait for the player
 }
 
+void GameWorld::build_here(int x, int y, int k)
+{
+  auto& chip = _all_chips[{x, y}];
+  if (!chip) {
+    int player_id = _current_player->first;
+    chip = std::make_shared<Chip>(x, y, player_id, k);
+    level_map[y][x] = player_id;
+  } else {
+    chip->size += k;
+  }
+  if (chip->size >= 4) {
+    auto player_id = chip->player_id;
+    auto player = _players[player_id];
+    explode(player, x, y);
+  }
+}
+
+namespace overload {
+
+template<class Key, class Value, class UnaryPredicate>
+std::map<Key, Value> filter(std::map<Key, Value> in_map, UnaryPredicate pred)
+{
+  std::map<Key, Value> out_map;
+  auto first = in_map.begin();
+  auto last = in_map.end();
+  while (first != last) {
+    if (pred(*first)) {
+      out_map.insert(*first);
+    }
+    first++;
+  }
+  return out_map;
+}
+
+} // namespace
+
 void GameWorld::ai_turn(int player_id) {
-  auto& chips = _players[player_id]->chips;
+  Chips chips = overload::filter(_all_chips, 
+    [player_id](const auto& a) {
+      return a.second->player_id == player_id && a.second->size > 0;
+    });
   std::random_device rd{};
   std::mt19937 gen{rd()};
-  std::uniform_int_distribution<> d(0, chips.size() - 1);
+  std::uniform_int_distribution<> d(0, static_cast<int>(chips.size() - 1));
   int r = d(gen);
   auto it = chips.begin();
   std::advance(it, r);
   auto player = _players[player_id];
   auto [x, y] = it->first;
-  _players[player_id]->build_here(x, y, 1, [this, player](int x, int y) {
-    explode(player, x, y);
-  });
+  build_here(x, y);
   return next_player();
 }
 
 void GameWorld::explode(std::shared_ptr<Player> player, int x, int y)
 {
-  player->chips[{x, y}].size -= 4;
+  _all_chips.at({x, y})->size -= 4;
+  if (_all_chips.at({x, y})->size == 0) {
+    level_map[y][x] = 0;
+  }
+  // player->chips.at({x, y}).size -= 4;
   int remaining = 0;
   remaining = add_left(player, x, y, 1);
   remaining = add_right(player, x, y, 1 + remaining);
@@ -83,10 +124,8 @@ void GameWorld::explode(std::shared_ptr<Player> player, int x, int y)
 int GameWorld::add_left(std::shared_ptr<Player> player, int x, int y, int k)
 {
   if (0 < x - 1 && x - 1 < level_map[y].size() && level_map[y][x - 1] != -1) {
-    player->build_here(x - 1, y, k, [this, player](int x, int y) {
-      explode(player, x - 1, y);
-    });
     level_map[y][x - 1] = player->id;
+    build_here(x - 1, y, k);
     return 0;
   } else {
     return k;
@@ -96,10 +135,8 @@ int GameWorld::add_left(std::shared_ptr<Player> player, int x, int y, int k)
 int GameWorld::add_right(std::shared_ptr<Player> player, int x, int y, int k)
 {
   if (0 < x + 1 && x + 1 < level_map[y].size() && level_map[y][x + 1] != -1) {
-    player->build_here(x + 1, y, k, [this, player](int x, int y) {
-      explode(player, x + 1, y);
-    });
     level_map[y][x + 1] = player->id;
+    build_here(x + 1, y, k);
     return 0;
   } else {
     return k;
@@ -109,10 +146,8 @@ int GameWorld::add_right(std::shared_ptr<Player> player, int x, int y, int k)
 int GameWorld::add_down(std::shared_ptr<Player> player, int x, int y, int k)
 {
   if (0 < y + 1 && y + 1 < level_map.size() && level_map[y + 1][x] != -1) {
-    player->build_here(x, y + 1, k, [this, player](int x, int y) {
-      explode(player, x, y + 1);
-    });
     level_map[y + 1][x] = player->id;
+    build_here(x, y + 1, k);
     return 0;
   } else {
     return k;
@@ -122,10 +157,8 @@ int GameWorld::add_down(std::shared_ptr<Player> player, int x, int y, int k)
 int GameWorld::add_up(std::shared_ptr<Player> player, int x, int y, int k)
 {
   if (0 < y - 1 && y - 1 < level_map.size() && level_map[y - 1][x] != -1) {
-    player->build_here(x, y - 1, k, [this, player](int x, int y) {
-      explode(player, x, y - 1);
-    });
     level_map[y - 1][x] = player->id;
+    build_here(x, y - 1, k);
     return 0;
   } else {
     return k;
@@ -142,25 +175,24 @@ void GameWorld::update_input(const std::unique_ptr<Input> &input)
     case 'q':
       _running = false;
       break;
-    case 'w':
+    case 'a':
       std::get<0>(cursor_position)--;
       break;
-    case 's':
+    case 'd':
       std::get<0>(cursor_position)++;
       break;
-    case 'a':
+    case 'w':
       std::get<1>(cursor_position)--;
       break;
-    case 'd':
+    case 's':
       std::get<1>(cursor_position)++;
       break;
     case 13: {// enter
-    
-      auto player = _current_player->second;
-      auto result = _current_player->second->build_here(get_cursor_x(), get_cursor_y(), 1, [this, player](int x, int y) {
-        explode(player, x, y);
-      });
-      if (result) {
+      if (_all_chips.count(cursor_position) > 0 
+          && _all_chips.at(cursor_position)->size > 0 
+          && _all_chips.at(cursor_position)->player_id == _current_player->first) {
+        auto [x, y] = cursor_position;
+        build_here(x, y);
         next_player();
       }
       break;
@@ -196,6 +228,12 @@ int GameWorld::get_cursor_x() const
 int GameWorld::get_cursor_y() const
 {
   return std::get<1>(cursor_position);
+}
+
+std::pair<int, int> GameWorld::get_chips(int x, int y) const
+{
+  const auto& chip = _all_chips.at({x, y});
+  return {chip->player_id, chip->size};
 }
 
 const std::shared_ptr<Player> &GameWorld::get_player(int id) const
@@ -244,6 +282,7 @@ void GameWorld::read_level_map(std::string level_file)
         int id = sym - '0';
         *marker = id;
         _players[id] = std::make_unique<Player>(x, y, id);
+        _all_chips[{x, y}] = std::make_shared<Chip>(x, y, id, 2);
         break;
       }
       default:
