@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include "../input.h"
+#include "../logic/build.h"
 #include "../logic/player.h"
 
 class GameWorld
@@ -28,6 +29,16 @@ public:
   void on_next_player();
   void ai_turn(int player_id);
   void explode(std::shared_ptr<Player> player, int x, int y);
+  template <class PositionCondition>
+  int add_one_side(int x, int y, int k, int player_id, PositionCondition cond)
+  {
+    if (cond()) {
+      start_building(x, y, k);
+      return 0;
+    } else {
+      return k;
+    }
+  }
   int add_left(std::shared_ptr<Player> player, int x, int y, int k);
   int add_right(std::shared_ptr<Player> player, int x, int y, int k);
   int add_up(std::shared_ptr<Player> player, int x, int y, int k);
@@ -36,6 +47,8 @@ public:
   int get_cursor_y() const;
   std::pair<int, int> get_chips(int x, int y) const;
   void build_here(int x, int y, int k = 1);
+  void start_building(int x, int y, int k = 1);
+  void on_building_stopped();
 
   std::vector<std::vector<bool>> walls;
   std::vector<std::vector<int>> level_map;
@@ -52,4 +65,5 @@ private:
   Players::iterator _current_player;
   using Chips = std::map<std::pair<int, int>, std::shared_ptr<Chip>>;
   Chips _all_chips;
+  std::list<std::unique_ptr<Build>> _sequence;
 };

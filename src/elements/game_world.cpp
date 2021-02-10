@@ -1,5 +1,6 @@
 #include "game_world.h"
 #include "../draw/renderer.h"
+#include "../logic/chip_build.h"
 #include <fstream>
 #include <iostream>
 #include <curses.h>
@@ -47,18 +48,27 @@ void GameWorld::on_next_player() {
   // else wait for the player
 }
 
+void GameWorld::start_building(int x, int y, int k) {
+  int player_id = _current_player->first;
+  _sequence.push_back(std::make_unique<ChipBuild>(std::shared_ptr<GameWorld>(this), x, y, player_id, k));
+}
+
+void GameWorld::on_building_stopped() {
+  next_player();
+}
+
 void GameWorld::build_here(int x, int y, int k)
 {
   auto& chip = _all_chips[{x, y}];
+  int player_id = _current_player->first;
   if (!chip) {
-    int player_id = _current_player->first;
     chip = std::make_shared<Chip>(x, y, player_id, k);
-    level_map[y][x] = player_id;
   } else {
     chip->size += k;
+    chip->player_id = player_id;
   }
+  level_map[y][x] = player_id;
   if (chip->size >= 4) {
-    auto player_id = chip->player_id;
     auto player = _players[player_id];
     explode(player, x, y);
   }
@@ -96,8 +106,7 @@ void GameWorld::ai_turn(int player_id) {
   std::advance(it, r);
   auto player = _players[player_id];
   auto [x, y] = it->first;
-  build_here(x, y);
-  return next_player();
+  start_building(x, y);
 }
 
 void GameWorld::explode(std::shared_ptr<Player> player, int x, int y)
@@ -123,46 +132,22 @@ void GameWorld::explode(std::shared_ptr<Player> player, int x, int y)
 
 int GameWorld::add_left(std::shared_ptr<Player> player, int x, int y, int k)
 {
-  if (0 < x - 1 && x - 1 < level_map[y].size() && level_map[y][x - 1] != -1) {
-    level_map[y][x - 1] = player->id;
-    build_here(x - 1, y, k);
-    return 0;
-  } else {
-    return k;
-  }  
+  return add_one_side(x - 1, y, k, player->id, [this, x, y](){ return 0 < x - 1 && x - 1 < level_map[y].size() && level_map[y][x - 1] != -1; });
 }
 
 int GameWorld::add_right(std::shared_ptr<Player> player, int x, int y, int k)
 {
-  if (0 < x + 1 && x + 1 < level_map[y].size() && level_map[y][x + 1] != -1) {
-    level_map[y][x + 1] = player->id;
-    build_here(x + 1, y, k);
-    return 0;
-  } else {
-    return k;
-  }
+  return add_one_side(x + 1, y, k, player->id, [this, x, y](){ return 0 < x + 1 && x + 1 < level_map[y].size() && level_map[y][x + 1] != -1; });
 }
 
 int GameWorld::add_down(std::shared_ptr<Player> player, int x, int y, int k)
 {
-  if (0 < y + 1 && y + 1 < level_map.size() && level_map[y + 1][x] != -1) {
-    level_map[y + 1][x] = player->id;
-    build_here(x, y + 1, k);
-    return 0;
-  } else {
-    return k;
-  }
+  return add_one_side(x, y + 1, k, player->id, [this, x, y](){ return 0 < y + 1 && y + 1 < level_map.size() && level_map[y + 1][x] != -1; });
 }
 
 int GameWorld::add_up(std::shared_ptr<Player> player, int x, int y, int k)
 {
-  if (0 < y - 1 && y - 1 < level_map.size() && level_map[y - 1][x] != -1) {
-    level_map[y - 1][x] = player->id;
-    build_here(x, y - 1, k);
-    return 0;
-  } else {
-    return k;
-  }
+  return add_one_side(x, y - 1, k, player->id, [this, x, y](){ return 0 < y - 1 && y - 1 < level_map.size() && level_map[y - 1][x] != -1; });
 }
   
 void GameWorld::update_input(const std::unique_ptr<Input> &input)
@@ -192,14 +177,16 @@ void GameWorld::update_input(const std::unique_ptr<Input> &input)
           && _all_chips.at(cursor_position)->size > 0 
           && _all_chips.at(cursor_position)->player_id == _current_player->first) {
         auto [x, y] = cursor_position;
-        build_here(x, y);
-        next_player();
+        start_building(x, y);
       }
       break;
     }
     }
   }
 }
+
+
+
 void GameWorld::update(std::function<void(void)> update_fn)
 {
   _update_fn = update_fn;
@@ -210,11 +197,29 @@ void GameWorld::draw(std::function<void(void)> draw_fn)
   _draw_fn = draw_fn;
 }
 
+const int max_delay = 5;
+
 void GameWorld::loop()
 {
   _running = true;
   while (_running)
   {
+    static int delay = 0;
+
+    if (!_sequence.empty()) {
+      if (delay > max_delay) {
+        delay = 0;
+        const auto& build = _sequence.front();
+        build->exec();
+        _sequence.pop_front();
+        if (_sequence.empty()) {
+          on_building_stopped();
+        }
+      } else {
+        delay += 1;
+      }
+    }
+    
     _update_fn();
     _draw_fn();
   }

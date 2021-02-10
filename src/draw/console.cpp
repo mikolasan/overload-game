@@ -77,7 +77,7 @@ void ConsoleRenderer::draw(const std::unique_ptr<GameWorld> &world)
     //std::cout << std::endl;
   }
   // printw("Cursor: %d %d\n", cursor_x, cursor_y);
-  napms(12);
+  napms(5);
   // move(LINES - 1, COLS - 1);
   refresh();
 }
